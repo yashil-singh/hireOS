@@ -1,28 +1,37 @@
 import { RouterProvider } from "react-router-dom";
 import router from "./routes";
-import { useSelector } from "react-redux";
-import { RootState } from "./lib/stores/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./lib/stores/store";
 import { useEffect } from "react";
+import { setIsDark } from "./lib/stores/theme/themeSlice";
 
 function App() {
+  const dispatch = useDispatch<AppDispatch>();
   const theme = useSelector((state: RootState) => state.theme.theme);
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove("dark");
 
     if (theme === "system") {
       const systemPrefersDark = window.matchMedia(
         "(prefers-color-scheme: dark)",
       ).matches;
 
-      root.classList.add(systemPrefersDark ? "dark" : "");
-    }
-
-    if (theme === "dark") {
+      if (systemPrefersDark) {
+        root.classList.add("dark");
+        dispatch(setIsDark(true));
+      } else {
+        root.classList.remove("dark");
+        dispatch(setIsDark(false));
+      }
+    } else if (theme === "dark") {
       root.classList.add("dark");
+      dispatch(setIsDark(true));
+    } else {
+      root.classList.remove("dark");
+      dispatch(setIsDark(false));
     }
-  }, [theme]);
+  }, [theme, dispatch]);
 
   return <RouterProvider router={router} />;
 }

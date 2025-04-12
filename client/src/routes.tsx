@@ -6,6 +6,10 @@ import OfferLetters from "./components/pages/OfferLetters";
 import Interviews from "./components/pages/Interviews";
 import CandidateProfiles from "./components/pages/CanditateProfiles";
 import NotFound from "./components/pages/NotFound";
+import Settings from "./components/pages/Settings/Settings";
+import AuthLayout from "./components/layouts/AuthLayout";
+import Login from "./components/pages/Auth/Login";
+import Signup from "./components/pages/Auth/Signup";
 
 const router = createBrowserRouter([
   {
@@ -33,9 +37,25 @@ const router = createBrowserRouter([
         path: "/interviews",
         element: <Interviews />,
       },
+      {
+        path: "/settings",
+        element: <Settings />,
+      },
     ],
   },
-  {},
+  {
+    element: <AuthLayout />,
+    children: [
+      {
+        path: "/login",
+        element: <Login />,
+      },
+      {
+        path: "/signup",
+        element: <Signup />,
+      },
+    ],
+  },
 ]);
 
 export default router;

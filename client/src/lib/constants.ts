@@ -1,6 +1,10 @@
 import Logo from "@/assets/images/logo.png";
 import Favicon from "@/assets/images/favicon.png";
 import SearchingImage from "@/assets/images/searching.svg";
+import ProfilingPrimary from "@/assets/images/profiling-primary.svg";
+import ProfilingSecondary from "@/assets/images/profiling-secondary.svg";
+import GoogleLogo from "@/assets/images/google-icon.svg";
+
 import { NavLink } from "./types";
 import {
   CalendarDays,
@@ -8,6 +12,7 @@ import {
   FileUser,
   LayoutDashboard,
   ListChecks,
+  Settings,
 } from "lucide-react";
 
 const NavLinks: NavLink[] = [
@@ -36,6 +41,19 @@ const NavLinks: NavLink[] = [
     to: "/interviews",
     Icon: CalendarDays,
   },
+  {
+    title: "Settings",
+    to: "/settings",
+    Icon: Settings,
+  },
 ];
 
-export { Logo, Favicon, NavLinks, SearchingImage };
+export {
+  Logo,
+  Favicon,
+  NavLinks,
+  SearchingImage,
+  ProfilingPrimary,
+  ProfilingSecondary,
+  GoogleLogo,
+};

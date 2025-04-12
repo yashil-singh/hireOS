@@ -1,4 +1,4 @@
-import { Laptop, Moon, Search, Sidebar, Sun, X } from "lucide-react";
+import { Laptop, Moon, Search, Sidebar, Sun, SunMoon, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -9,8 +9,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/lib/stores/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/stores/store";
 import { toggleCollapse } from "@/lib/stores/sideBar/sideBarStore";
 import MobileSidebar from "./MobileSidebar";
 import {
@@ -22,6 +22,7 @@ import { Favicon } from "@/lib/constants";
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const theme = useSelector((state: RootState) => state.theme.theme);
 
   return (
     <header className="blur-backdrop header-h sticky top-0 z-10 flex w-full items-center justify-between border-b px-4">
@@ -79,7 +80,9 @@ const Header = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="icon" variant="outline">
-              <Moon className="header-icon" />
+              {theme === "dark" && <Moon className="header-icon" />}
+              {theme === "light" && <Sun className="header-icon" />}
+              {theme === "system" && <SunMoon className="header-icon" />}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>

@@ -10,9 +10,9 @@ const RootLayout = () => {
       <div className="flex h-screen w-full flex-col overflow-y-auto">
         <Header />
 
-        <div className="h-full p-4">
+        <main className="h-full p-4">
           <Outlet />
-        </div>
+        </main>
       </div>
     </div>
   );
