@@ -1,11 +1,8 @@
-import Logo from "@/assets/logo.png";
+import { RouterProvider } from "react-router-dom";
+import router from "./routes";
 
 function App() {
-  return (
-    <div className="flex h-screen flex-col items-center justify-center">
-      <img src={Logo} className="mx-auto h-14" />
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
