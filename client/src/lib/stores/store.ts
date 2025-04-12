@@ -1,16 +1,18 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import sideBarReducer from "@store/sideBar/sideBarStore";
+import themeReducer from "@store/theme/themeSlice";
 import storage from "redux-persist/lib/storage";
 import { persistStore, persistReducer } from "redux-persist";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["sidebar"],
+  whitelist: ["sidebar", "theme"],
 };
 
 const rootReducer = combineReducers({
   sidebar: sideBarReducer,
+  theme: themeReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

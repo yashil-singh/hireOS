@@ -174,7 +174,7 @@
 
 @layer components {
   .nav-link {
-    @apply hover:bg-primary/5 hover:text-primary flex flex-nowrap items-center gap-2 overflow-hidden rounded-md px-4 py-3 font-medium transition-colors;
+    @apply hover:bg-primary/5 hover:text-primary flex flex-nowrap items-center gap-2 overflow-hidden rounded-md px-4 py-3 text-sm font-medium transition-colors outline-none md:text-base;
   }
 
   .nav-link.active {

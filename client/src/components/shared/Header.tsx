@@ -1,10 +1,11 @@
-import { Moon, Search, Sidebar, X } from "lucide-react";
+import { Laptop, Moon, Search, Sidebar, Sun, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -12,6 +13,12 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/lib/stores/store";
 import { toggleCollapse } from "@/lib/stores/sideBar/sideBarStore";
 import MobileSidebar from "./MobileSidebar";
+import {
+  setDarkTheme,
+  setLightTheme,
+  setSystemTheme,
+} from "@/lib/stores/theme/themeSlice";
+import { Favicon } from "@/lib/constants";
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -66,10 +73,37 @@ const Header = () => {
         </DropdownMenu>
       </div>
 
-      <div className="flex items-center gap-1">
-        <Button size="icon" variant="outline">
-          <Moon className="header-icon" />
-        </Button>
+      <img src={Favicon} className="h-8 md:hidden" />
+
+      <div className="flex w-full items-center justify-end gap-1 md:w-fit">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="outline">
+              <Moon className="header-icon" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>Theme</DropdownMenuLabel>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => dispatch(setLightTheme())}
+            >
+              <Sun /> Light
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => dispatch(setDarkTheme())}
+            >
+              <Moon /> Dark
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => dispatch(setSystemTheme())}
+            >
+              <Laptop /> System
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Avatar className="size-12">
           <AvatarImage src="" />

@@ -51,6 +51,7 @@ const Navbar = ({
                   </NavLink>
                 </TooltipTrigger>
                 <TooltipContent
+                  sideOffset={10}
                   side="right"
                   className={cn(!showOnlyIcon && "hidden")}
                 >
