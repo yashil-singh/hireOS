@@ -7,13 +7,13 @@ const RootLayout = () => {
     <div className="flex">
       <Sidebar />
 
-      <div className="flex h-screen w-full flex-col overflow-y-auto">
+      <section className="w-full">
         <Header />
 
-        <main className="h-full p-4">
+        <main className="p-4">
           <Outlet />
         </main>
-      </div>
+      </section>
     </div>
   );
 };

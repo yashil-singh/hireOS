@@ -17,7 +17,7 @@
   --primary-foreground: oklch(0.985 0 0);
 
   --secondary: oklch(0.24 0.0713 252.01);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
 
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -158,6 +158,10 @@
   button {
     @apply cursor-pointer;
   }
+  th,
+  th * {
+    @apply font-bold!;
+  }
 }
 
 @layer utilities {
@@ -170,15 +174,24 @@
   .header-icon {
     @apply text-muted-foreground dark:text-foreground size-5!;
   }
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
 }
 
 @layer components {
   .nav-link {
-    @apply hover:bg-primary/5 hover:text-primary flex flex-nowrap items-center gap-2 overflow-hidden rounded-md px-4 py-3 text-sm font-light transition-colors outline-none md:text-base;
+    @apply hover:bg-primary/5 hover:text-primary flex flex-nowrap items-center gap-2 overflow-hidden rounded-md px-4 py-3 text-sm transition-colors outline-none md:text-base;
   }
 
   .nav-link.active {
-    @apply bg-primary/10 text-primary font-normal;
+    @apply bg-primary/10 text-primary;
   }
 
   .page-heading {
@@ -187,5 +200,14 @@
 
   .page-description {
     @apply text-muted-foreground;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

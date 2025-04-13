@@ -34,6 +34,11 @@ const Signup = () => {
   return (
     <>
       <Form {...form}>
+        <div className="text-center">
+          <h1 className="text-xl font-black">Create a new account.</h1>
+          <p className="text-muted-foreground">Start hiring like a pro!</p>
+        </div>
+
         <form
           className="w-full space-y-2"
           onSubmit={form.handleSubmit(onSubmit)}

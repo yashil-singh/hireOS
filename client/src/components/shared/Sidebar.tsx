@@ -5,17 +5,8 @@ import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/stores/store";
 import { cn } from "@/lib/utils";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import LogoutDialog from "./LogoutDialog";
 
 const Sidebar = () => {
   const isCollapsed = useSelector(
@@ -25,7 +16,7 @@ const Sidebar = () => {
   return (
     <aside
       className={cn(
-        "hidden h-screen flex-col justify-between border-r transition-all md:flex",
+        "sticky top-0 left-0 hidden h-screen flex-col justify-between border-r transition-all lg:flex",
         isCollapsed ? "w-20" : "w-96",
       )}
     >
@@ -54,21 +45,7 @@ const Sidebar = () => {
               {!isCollapsed && "Logout"}
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Logout</AlertDialogTitle>
-              <AlertDialogDescription>
-                Are you sure you want to log out? You’ll need to sign in again
-                to access your account.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction variant="destructive">
-                Logout
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
+          <LogoutDialog />
         </AlertDialog>
       </div>
     </aside>

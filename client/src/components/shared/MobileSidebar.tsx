@@ -11,6 +11,8 @@ import { Button } from "../ui/button";
 import { LogOut, Sidebar } from "lucide-react";
 import Navbar from "./Navbar";
 import { Logo } from "@/lib/constants";
+import LogoutDialog from "./LogoutDialog";
+import { AlertDialog, AlertDialogTrigger } from "../ui/alert-dialog";
 
 const MobileSidebar = () => {
   const [open, setOpen] = useState(false);
@@ -18,7 +20,7 @@ const MobileSidebar = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button size="icon" variant="outline" className="md:hidden">
+        <Button size="icon" variant="outline" className="lg:hidden">
           <Sidebar className="header-icon" />
         </Button>
       </SheetTrigger>
@@ -36,9 +38,14 @@ const MobileSidebar = () => {
           <Navbar onLinkClick={() => setOpen(false)} />
 
           <div>
-            <Button className="w-full">
-              <LogOut className="size-5" /> Logout
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button className="w-full">
+                  <LogOut className="size-5" /> Logout
+                </Button>
+              </AlertDialogTrigger>
+              <LogoutDialog />
+            </AlertDialog>
           </div>
         </div>
       </SheetContent>

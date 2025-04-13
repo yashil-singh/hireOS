@@ -33,6 +33,11 @@ const Login = () => {
   return (
     <>
       <Form {...form}>
+        <div className="text-center">
+          <h1 className="text-xl font-black">Login to your account.</h1>
+          <p className="text-muted-foreground">Get back to hiring!</p>
+        </div>
+
         <form
           className="w-full space-y-2"
           onSubmit={form.handleSubmit(onSubmit)}
