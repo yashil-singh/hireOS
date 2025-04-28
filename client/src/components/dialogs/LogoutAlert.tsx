@@ -8,7 +8,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const LogoutDialog = () => {
+const LogoutAlert = () => {
   return (
     <AlertDialogContent>
       <AlertDialogHeader>
@@ -26,4 +26,4 @@ const LogoutDialog = () => {
   );
 };
 
-export default LogoutDialog;
+export default LogoutAlert;

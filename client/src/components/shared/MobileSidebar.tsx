@@ -11,8 +11,8 @@ import { Button } from "../ui/button";
 import { LogOut, Sidebar } from "lucide-react";
 import Navbar from "./Navbar";
 import { Logo } from "@/lib/constants";
-import LogoutDialog from "./LogoutDialog";
 import { AlertDialog, AlertDialogTrigger } from "../ui/alert-dialog";
+import LogoutAlert from "../dialogs/LogoutAlert";
 
 const MobileSidebar = () => {
   const [open, setOpen] = useState(false);
@@ -44,7 +44,7 @@ const MobileSidebar = () => {
                   <LogOut className="size-5" /> Logout
                 </Button>
               </AlertDialogTrigger>
-              <LogoutDialog />
+              <LogoutAlert />
             </AlertDialog>
           </div>
         </div>

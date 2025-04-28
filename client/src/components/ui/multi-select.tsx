@@ -4,7 +4,7 @@ import { CheckIcon, XCircle, ChevronDown, XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Popover,
@@ -116,7 +116,6 @@ export const MultiSelect = React.forwardRef<
       placeholder = "Select options",
       maxCount = 3,
       modalPopover = true,
-      asChild = false,
       className,
       error,
       ...props
@@ -185,17 +184,17 @@ export const MultiSelect = React.forwardRef<
               ref={ref}
               {...props}
               onClick={handleTogglePopover}
+              aria-invalid={error}
               className={cn(
-                "dark:bg-input/30 flex h-auto min-h-10 w-full items-center justify-between rounded-md border bg-transparent p-1 hover:bg-inherit [&_svg]:pointer-events-auto",
-                error &&
-                  "border-destructive focus-visible:ring-destructive/20 border",
+                buttonVariants({ variant: "outline" }),
+                "h-12 px-1 [&_svg]:pointer-events-auto",
                 className,
               )}
               type="button"
             >
               {selectedValues.length > 0 ? (
                 <div className="flex w-full items-center justify-between">
-                  <div className="flex max-w-[250px] flex-nowrap items-center overflow-x-auto sm:max-w-full">
+                  <div className="no-scrollbar flex max-w-[250px] flex-nowrap items-center overflow-x-auto sm:max-w-full">
                     {selectedValues.slice(0, maxCount).map((value) => {
                       const option = options.find((o) => o.value === value);
                       const IconComponent = option?.icon;

@@ -64,10 +64,10 @@
   --secondary: oklch(0.24 0.0713 252.01);
   --secondary-foreground: oklch(0.205 0 0);
 
-  --muted: oklch(0.269 0 0);
+  --muted: oklch(0.31 0 0);
   --muted-foreground: oklch(0.708 0 0);
 
-  --accent: oklch(0.269 0 0);
+  --accent: oklch(0.25 0 0);
   --accent-foreground: oklch(0.985 0 0);
 
   --card: oklch(0.205 0 0);
@@ -81,13 +81,13 @@
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
 
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
 
+  --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -150,7 +150,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50 font-lexend;
+    @apply border-border outline-ring/50 font-ibm;
   }
   body {
     @apply bg-background text-foreground;
@@ -161,6 +161,11 @@
   th,
   th * {
     @apply font-bold!;
+  }
+  [type="search"]::-webkit-search-cancel-button,
+  [type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
   }
 }
 
@@ -174,18 +179,28 @@
   .header-icon {
     @apply text-muted-foreground dark:text-foreground size-5!;
   }
-  /* Hide scrollbar for Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  /* Hide scrollbar for IE, Edge and Firefox */
   .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  [aria-invalid="true"] {
+    @apply border-destructive dark:border-destructive;
+  }
+
+  .hide-num-input {
+    @apply [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none;
   }
 }
 
 @layer components {
+  .small-container {
+    @apply mx-auto max-w-5xl;
+  }
+
   .nav-link {
     @apply hover:bg-primary/5 hover:text-primary flex flex-nowrap items-center gap-2 overflow-hidden rounded-md px-4 py-3 text-sm transition-colors outline-none md:text-base;
   }
@@ -200,6 +215,39 @@
 
   .page-description {
     @apply text-muted-foreground;
+  }
+
+  .Sx9Kwc-haAclf {
+    @apply bg-background! text-foreground!;
+  }
+
+  .fc-prev-button,
+  .fc-next-button {
+    @apply flex! size-9! items-center! justify-center! rounded-full!;
+  }
+
+  .fc-button-primary {
+    @apply hover:bg-accent! text-primary! rounded-lg! border-none! bg-transparent! transition-colors! focus:shadow-none! disabled:cursor-not-allowed;
+  }
+
+  .fc-today-button {
+    @apply border-none! bg-transparent! text-base! capitalize!;
+  }
+
+  .fc-toolbar-title {
+    @apply font-bold;
+  }
+
+  .fc-scrollgrid {
+    @apply overflow-hidden rounded-xl;
+  }
+
+  .fc-popover {
+    @apply bg-card! border-border! overflow-hidden! rounded-xl!;
+  }
+
+  .fc-popover-header {
+    @apply px-4! text-sm! font-semibold!;
   }
 }
 

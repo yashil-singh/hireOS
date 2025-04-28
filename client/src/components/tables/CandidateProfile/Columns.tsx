@@ -12,6 +12,9 @@ import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "../DataTableColumnHeader";
 import { Candidate } from "@/lib/types";
+import { Link } from "react-router-dom";
+import AccountAvatar from "@/components/shared/AccountAvatar";
+import { differenceInDays } from "date-fns";
 
 export const columns: ColumnDef<Candidate>[] = [
   {
@@ -37,9 +40,13 @@ export const columns: ColumnDef<Candidate>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ID" />
+    id: "avatar",
+    header: () => <></>,
+    cell: ({ row }) => (
+      <AccountAvatar
+        className="size-8"
+        avatarUrl={row.original.avatarUrl ?? ""}
+      />
     ),
   },
   {
@@ -67,15 +74,19 @@ export const columns: ColumnDef<Candidate>[] = [
       const candidate = row.original;
       const experiences = candidate.experience;
 
-      const totalDuration = experiences.reduce(
-        (total, exp) => total + exp.duration,
-        0,
-      );
-
       let filteredDuration = "";
+      let totalDuration = 0;
+
+      experiences.forEach((exp) => {
+        const startDate = new Date(exp.startDate);
+        const endDate = new Date(exp.endDate);
+
+        const diffInDays = differenceInDays(endDate, startDate);
+        totalDuration += diffInDays;
+      });
 
       if (totalDuration) {
-        const years = Math.floor(totalDuration / 12);
+        const years = Math.floor(totalDuration / 365);
         const months = totalDuration % 12;
 
         if (years > 0) {
@@ -89,7 +100,7 @@ export const columns: ColumnDef<Candidate>[] = [
               : `${months} month${months > 1 ? "s" : ""}`;
         }
       } else {
-        filteredDuration = "None";
+        filteredDuration = "N/A";
       }
 
       return <span>{filteredDuration}</span>;
@@ -105,7 +116,7 @@ export const columns: ColumnDef<Candidate>[] = [
     id: "actions",
     header: () => <span className="text-primary">Actions</span>,
     cell: ({ row }) => {
-      const payment = row.original;
+      const candidate = row.original;
 
       return (
         <DropdownMenu>
@@ -122,10 +133,14 @@ export const columns: ColumnDef<Candidate>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>View CV</DropdownMenuItem>
-            <DropdownMenuItem>Edit Candidate Profile</DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/candidates/${candidate.id}`}>View Details</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link to={`/candidates/edit/${candidate.id}`}>Edit Details</Link>
+            </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+              onClick={() => navigator.clipboard.writeText(candidate.id)}
             >
               Copy Candidate ID
             </DropdownMenuItem>

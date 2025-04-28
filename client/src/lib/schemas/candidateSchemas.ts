@@ -2,7 +2,7 @@ import { z } from "zod";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { ACCEPTED_FILE_TYPES, MAX_FILE_SIZE } from "../constants";
 
-export const addCandidateSchema = z.object({
+export const candidateSchema = z.object({
   name: z
     .string()
     .min(1, "Full name is required.")
@@ -57,9 +57,6 @@ export const addCandidateSchema = z.object({
         }),
     )
     .optional(),
-  status: z
-    .string({ required_error: "Status is required." })
-    .min(1, "Status is required."),
   resumeFile: z
     .instanceof(File, { message: "Resume is required." })
     .refine((file) => file.size > 0, {
@@ -76,6 +73,7 @@ export const addCandidateSchema = z.object({
 
 export const experienceSchema = z
   .object({
+    jobTitle: z.string().min(1, "Job title is required."),
     company: z.string().min(1, "Company name is required."),
     startDate: z.string().min(1, "Start date is required."),
     endDate: z.string().min(1, "End date is required."),

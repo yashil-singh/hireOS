@@ -27,9 +27,9 @@ const Signup = () => {
 
   const isSubmitting = form.formState.isSubmitting;
 
-  async function onSubmit(values: z.infer<typeof signupFormSceham>) {
+  const onSubmit = async (values: z.infer<typeof signupFormSceham>) => {
     console.log("🚀 ~ Signup.tsx:19 ~ values:", values);
-  }
+  };
 
   return (
     <>

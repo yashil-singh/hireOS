@@ -20,51 +20,43 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { DataTablePagination } from "@/components/tables/DataTablePagination";
 import { DataTableViewOptions } from "@/components/tables/DataTableViewOptions";
 import { Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { useIsMobile } from "@/hooks/use-mobile";
+import DynamicDialog from "../dialogs/DynamicDialog";
+import SearchInput from "../shared/SearchInput";
 
 interface DataTableProps<TData, TValue> {
+  topChildren?: React.ReactNode;
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchableColumns?: (keyof TData)[];
+  searchableColumns?: string[];
   addDataForm?: React.ReactNode;
-  addDataTitle?: string;
-  addDataDescription?: string;
+  addDataTitle: string;
+  addDataDescription: string;
+  searchPlaceholder?: string;
+  initialSearchQuery?: string;
 }
 
 export function DataTable<TData, TValue>({
+  topChildren,
   columns,
   data,
   searchableColumns,
   addDataForm,
   addDataTitle,
   addDataDescription,
+  searchPlaceholder,
+  initialSearchQuery,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState<string>("");
+  const [globalFilter, setGlobalFilter] = useState<string>(
+    initialSearchQuery ?? "",
+  );
   const [open, setOpen] = useState(false);
 
   const table = useReactTable({
@@ -92,7 +84,16 @@ export function DataTable<TData, TValue>({
       }
 
       return searchableColumns.some((col) => {
-        const rowValue = row.original[col];
+        const keys = col.split("."); // handle nested keys
+        let rowValue: unknown = row.original;
+
+        for (const key of keys) {
+          if (rowValue == null) {
+            return false;
+          }
+          rowValue = (rowValue as Record<string, unknown>)[key];
+        }
+
         if (typeof rowValue === "number") {
           return rowValue.toString().includes(value);
         } else if (typeof rowValue === "string") {
@@ -103,62 +104,43 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  const isMobile = useIsMobile();
-
   return (
     <div className="mt-4 space-y-4">
       {/* Filters */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center">
         {searchableColumns && searchableColumns.length > 0 && (
-          <div className="space-y-2">
-            <Input
+          <div className="w-full space-y-2">
+            <SearchInput
               placeholder="Search..."
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
-              className="max-w-sm"
+              className="w-full max-w-[500px]"
             />
-            <Label className="text-muted-foreground text-xs">{`Filter by ${searchableColumns.join(", ")}.`}</Label>
+            {searchPlaceholder && (
+              <Label className="text-muted-foreground text-xs">
+                {searchPlaceholder}
+              </Label>
+            )}
           </div>
         )}
 
         <div className="flex gap-2 md:ml-auto">
-          {addDataForm &&
-            (isMobile ? (
-              <Drawer open={open} onOpenChange={setOpen}>
-                <DrawerTrigger asChild>
-                  <Button>
-                    <Plus /> Add
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent className="flex min-h-[90vh] items-center outline-none">
-                  <div className="no-scrollbar mx-auto mt-4 w-full max-w-[800px] overflow-y-auto p-4">
-                    <DrawerHeader className="px-0">
-                      <DrawerTitle>{addDataTitle}</DrawerTitle>
-                      <DrawerDescription>
-                        {addDataDescription}
-                      </DrawerDescription>
-                    </DrawerHeader>
-                    {addDataForm}
-                  </div>
-                </DrawerContent>
-              </Drawer>
-            ) : (
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus /> Add
-                  </Button>
-                </DialogTrigger>
-
-                <DialogContent className="no-scrollbar max-h-[95vh] max-w-[800px]! overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>{addDataTitle}</DialogTitle>
-                    <DialogDescription>{addDataDescription}</DialogDescription>
-                  </DialogHeader>
-                  {addDataForm}
-                </DialogContent>
-              </Dialog>
-            ))}
+          {addDataForm && (
+            <DynamicDialog
+              title={addDataTitle}
+              description={addDataDescription}
+              trigger={
+                <Button>
+                  <Plus /> Add
+                </Button>
+              }
+              open={open}
+              onOpenChange={setOpen}
+            >
+              {addDataForm}
+            </DynamicDialog>
+          )}
+          {topChildren}
           <DataTableViewOptions table={table} />
         </div>
       </div>

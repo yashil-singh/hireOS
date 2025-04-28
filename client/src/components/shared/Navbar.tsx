@@ -44,7 +44,9 @@ const Navbar = ({
                       )
                     }
                   >
-                    <link.Icon className={cn(showOnlyIcon && "size-6")} />
+                    <link.Icon
+                      className={cn("size-5", showOnlyIcon && "size-6")}
+                    />
                     {!showOnlyIcon && (
                       <span className="line-clamp-1">{link.title}</span>
                     )}

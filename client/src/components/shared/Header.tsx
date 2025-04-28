@@ -32,8 +32,8 @@ import {
 import { Favicon } from "@/lib/constants";
 import AccountAvatar from "./AccountAvatar";
 import { Link } from "react-router-dom";
-import LogoutDialog from "./LogoutDialog";
 import { AlertDialog, AlertDialogTrigger } from "../ui/alert-dialog";
+import LogoutAlert from "../dialogs/LogoutAlert";
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -125,8 +125,12 @@ const Header = () => {
 
         <AlertDialog>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger className="flex items-center gap-2">
               <AccountAvatar avatarUrl="" />
+              <div className="hidden text-left text-sm lg:block">
+                <p className="font-medium">Yashil Lal Singh</p>
+                <p className="text-muted-foreground">yashil@gmail.com</p>
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <div className="flex w-[250px] items-center gap-2 p-2">
@@ -162,7 +166,7 @@ const Header = () => {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <LogoutDialog />
+          <LogoutAlert />
         </AlertDialog>
       </div>
     </header>

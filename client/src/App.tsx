@@ -4,10 +4,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "./lib/stores/store";
 import { useEffect } from "react";
 import { setIsDark } from "./lib/stores/theme/themeSlice";
+import { Toaster } from "sonner";
 
 function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const theme = useSelector((state: RootState) => state.theme.theme);
+  const { theme, isDark } = useSelector((state: RootState) => state.theme);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -33,7 +34,12 @@ function App() {
     }
   }, [theme, dispatch]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster theme={isDark ? "dark" : "light"} richColors />
+    </>
+  );
 }
 
 export default App;

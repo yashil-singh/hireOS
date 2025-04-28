@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/stores/store";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import LogoutDialog from "./LogoutDialog";
+import LogoutDialog from "../dialogs/LogoutAlert";
 
 const Sidebar = () => {
   const isCollapsed = useSelector(

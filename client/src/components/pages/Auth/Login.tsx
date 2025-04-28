@@ -26,9 +26,9 @@ const Login = () => {
 
   const isSubmitting = form.formState.isSubmitting;
 
-  async function onSubmit(values: z.infer<typeof loginFormSchema>) {
+  const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
     console.log("🚀 ~ Signup.tsx:19 ~ values:", values);
-  }
+  };
 
   return (
     <>
@@ -85,7 +85,7 @@ const Login = () => {
 
           <Button className="w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="animate-spin" />}
-            {isSubmitting ? "Signing up" : "Signup"}
+            {isSubmitting ? "Logging in" : "Login"}
           </Button>
 
           <p className="text-muted-foreground text-center text-sm">

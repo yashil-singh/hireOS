@@ -6,7 +6,7 @@ import { SearchingImage } from "@/lib/constants";
 const NotFound = () => {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center gap-8 p-12 md:flex-row md:gap-14">
-      <div className="dark:bg-foreground size-[450px] rounded-xl p-4">
+      <div className="dark:bg-foreground max-w-[450px] rounded-xl p-4">
         <img src={SearchingImage} alt="searching for page" />
       </div>
 

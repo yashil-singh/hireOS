@@ -5,7 +5,7 @@ import Profiling from "@/assets/images/profiling.svg";
 import GoogleLogo from "@/assets/images/google-icon.svg";
 import AvatarPlaceholder from "@/assets/images/avatar-placeholder.png";
 
-import { NavLink } from "./types";
+import { NavLink, SelectOption } from "./types";
 import {
   CalendarDays,
   FileText,
@@ -22,9 +22,14 @@ const NavLinks: NavLink[] = [
     Icon: LayoutDashboard,
   },
   {
-    title: "Candidate Profile",
-    to: "/candidate-profiles",
+    title: "Candidates",
+    to: "/candidates",
     Icon: FileUser,
+  },
+  {
+    title: "Calendar",
+    to: "/interviews",
+    Icon: CalendarDays,
   },
   {
     title: "Assessments",
@@ -32,14 +37,9 @@ const NavLinks: NavLink[] = [
     Icon: ListChecks,
   },
   {
-    title: "Offer Letters",
-    to: "/offer-letters",
+    title: "Letters",
+    to: "/letters",
     Icon: FileText,
-  },
-  {
-    title: "Interviews",
-    to: "/interviews",
-    Icon: CalendarDays,
   },
   {
     title: "Settings",
@@ -57,7 +57,7 @@ const CandidateLevels = [
   "Senior",
 ];
 
-const CandidateStatus: { label: string; value: string }[] = [
+const CandidateStatus: SelectOption[] = [
   {
     label: "Short-Listed",
     value: "short-listed",
@@ -76,7 +76,7 @@ const CandidateStatus: { label: string; value: string }[] = [
   },
 ];
 
-const Technologies: { label: string; value: string }[] = [
+const Technologies: SelectOption[] = [
   { label: "ReactJS", value: "react" },
   { label: "Next.js", value: "next" },
   { label: "Node.js", value: "node" },
@@ -109,6 +109,35 @@ const Technologies: { label: string; value: string }[] = [
   { label: ".NET", value: "dotnet" },
 ];
 
+const AssessmentTypes: SelectOption[] = [
+  {
+    label: "Technical",
+    value: "technical",
+  },
+  {
+    label: "Aptitude",
+    value: "aptitude",
+  },
+  {
+    label: "Personality",
+    value: "personality",
+  },
+  {
+    label: "Behavioral",
+    value: "behavioral",
+  },
+];
+
+const HIRING_STEPS: string[] = [
+  "First Interview",
+  "Second Interview",
+  "Third Interview",
+  "Assessment",
+  "Background Check",
+  "Offer Letter",
+];
+
+const BASE_API_URL = "http://localhost:3000/api";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",
@@ -118,6 +147,8 @@ const ACCEPTED_FILE_TYPES = [
   "image/png",
   "image/jpg",
 ];
+
+const DEFAULT_DATE_FORMAT = "do MMMM yyyy";
 
 export {
   Logo,
@@ -132,4 +163,8 @@ export {
   CandidateStatus,
   MAX_FILE_SIZE,
   ACCEPTED_FILE_TYPES,
+  BASE_API_URL,
+  HIRING_STEPS,
+  AssessmentTypes,
+  DEFAULT_DATE_FORMAT,
 };
