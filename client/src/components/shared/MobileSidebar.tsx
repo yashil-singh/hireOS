@@ -24,7 +24,7 @@ const MobileSidebar = () => {
           <Sidebar className="header-icon" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left">
+      <SheetContent side="left" className="overflow-y-auto">
         <SheetHeader className="pt-12">
           <SheetTitle className="hidden">Sidebar</SheetTitle>
           <SheetDescription className="hidden">

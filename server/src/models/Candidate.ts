@@ -1,6 +1,6 @@
-import mongoose, { Document, ObjectId, Schema } from "mongoose";
+import mongoose, { Document, Model, ObjectId, Schema } from "mongoose";
 
-export interface Experience {
+export interface IExperience extends Document {
   jobTitle: string;
   company: string;
   startDate: string;
@@ -8,7 +8,7 @@ export interface Experience {
   duration: number;
 }
 
-export interface Candidate extends Document {
+export interface ICandidate extends Document {
   _id: ObjectId;
   name: string;
   phone: string;
@@ -16,7 +16,7 @@ export interface Candidate extends Document {
   level: string;
   technology: string[];
   reference: string;
-  experience: Experience[];
+  experience: IExperience[];
   salaryExpectation: string;
   status: string;
   resumeUrl: string;
@@ -24,15 +24,14 @@ export interface Candidate extends Document {
   updatedAt: Date;
 }
 
-const experienceSchema = new Schema<Experience>({
+const experienceSchema = new Schema<IExperience>({
   jobTitle: { type: String, required: true },
   company: { type: String, required: true },
   startDate: { type: String, required: true },
   endDate: { type: String, required: true },
-  duration: { type: Number, required: true },
 });
 
-const candidateSchema = new Schema<Candidate>(
+const candidateSchema = new Schema<ICandidate>(
   {
     name: { type: String, required: true },
     phone: { type: String, required: true },
@@ -42,7 +41,10 @@ const candidateSchema = new Schema<Candidate>(
     reference: { type: String, required: false },
     experience: { type: [experienceSchema], required: false },
     salaryExpectation: { type: String, required: true },
-    status: { type: String, required: true },
+    status: {
+      type: String,
+      required: true,
+    },
     resumeUrl: { type: String, required: true },
   },
   {
@@ -50,5 +52,8 @@ const candidateSchema = new Schema<Candidate>(
   }
 );
 
-const Candidate = mongoose.model<Candidate>("Candidate", candidateSchema);
+const Candidate: Model<ICandidate> = mongoose.model<ICandidate>(
+  "Candidate",
+  candidateSchema
+);
 export default Candidate;

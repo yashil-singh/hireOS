@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
-import { RootState } from "@/lib/stores/store";
-import { useEffect, useState } from "react";
+import { RootState } from "@/lib/slices/store";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -56,13 +56,13 @@ const Assessments = () => {
     form.reset();
   };
 
+  const createParam = useMemo(() => searchParams.get("create"), [searchParams]);
+
   useEffect(() => {
-    const shouldOpenCreateDialog = searchParams.get("create") === "true";
-    if (shouldOpenCreateDialog) {
+    if (createParam === "true") {
       setIsCreating(true);
-      return;
     }
-  }, [searchParams]);
+  }, [createParam]);
 
   return (
     <>
@@ -76,7 +76,7 @@ const Assessments = () => {
           value={searchQuery}
           onValueChange={setSearchQuery}
           onClear={() => setSearchQuery("")}
-          className="max-w-[500px]"
+          className="max-w-[500px] self-start"
           placeholder="Search for an assessment using title or technology..."
         />
 

@@ -3,7 +3,7 @@ import { DataTable } from "@/components/tables/DataTable";
 import LetterData from "@/assets/data/Letters";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Send } from "lucide-react";
+import { FilePen, Send } from "lucide-react";
 
 const Letters = () => {
   return (
@@ -25,12 +25,20 @@ const Letters = () => {
         addDataDescription=""
         searchPlaceholder="Filter letters using candidate's id, name, email or draft title"
         topChildren={
-          <Button asChild>
-            <Link to="/letters/send">
-              <Send />
-              Send
-            </Link>
-          </Button>
+          <>
+            <Button asChild>
+              <Link to="/letters/drafts">
+                <FilePen />
+                Drafts
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link to="/letters/send">
+                <Send />
+                Send
+              </Link>
+            </Button>
+          </>
         }
       />
     </>

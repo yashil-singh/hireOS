@@ -30,6 +30,8 @@ import { cn } from "@/lib/utils";
 import { Editor } from "@tiptap/react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import ToolTip from "./ToolTip";
 
 type RichTextEditorToolbarProps = {
   className?: string;
@@ -88,10 +90,6 @@ const RichTextEditorToolbar = ({
     editor.on("selectionUpdate", updateToolbar);
     editor.on("transaction", updateToolbar);
     editor.on("update", () => {
-      console.log(
-        "🚀 ~ RichTextEditorToolbar.tsx:94 ~ editor.isEditable:",
-        editor.isEditable,
-      );
       setEditable(editor.isEditable);
       updateCharacterCount();
     });
@@ -196,75 +194,92 @@ const RichTextEditorToolbar = ({
         </Select>
 
         <ToggleGroup type="multiple" className="gap-1" value={activeFormats}>
-          <ToggleGroupItem
-            value="bold"
-            aria-label="Toggle bold"
-            onClick={() => editor.chain().focus().toggleBold().run()}
-            className="aspect-square"
-            disabled={!editable}
-          >
-            <Bold className="size-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="italic"
-            aria-label="Toggle italic"
-            onClick={() => editor.chain().focus().toggleItalic().run()}
-            className="aspect-square"
-            disabled={!editable}
-          >
-            <Italic className="size-4" />
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="underline"
-            aria-label="Toggle underline"
-            onClick={() => editor.chain().focus().toggleUnderline().run()}
-            className="aspect-square"
-            disabled={!editable}
-          >
-            <Underline className="size-4" />
-          </ToggleGroupItem>
+          <ToolTip label="Toggle Bold" show={editable}>
+            <ToggleGroupItem
+              value="bold"
+              aria-label="Toggle bold"
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              className="aspect-square"
+              disabled={!editable}
+            >
+              <Bold className="size-4" />
+            </ToggleGroupItem>
+          </ToolTip>
+
+          <ToolTip label="Toggle Italic" show={editable}>
+            <ToggleGroupItem
+              value="italic"
+              aria-label="Toggle italic"
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              className="aspect-square"
+              disabled={!editable}
+            >
+              <Italic className="size-4" />
+            </ToggleGroupItem>
+          </ToolTip>
+
+          <ToolTip label="Toggle Underline" show={editable}>
+            <ToggleGroupItem
+              value="underline"
+              aria-label="Toggle underline"
+              onClick={() => editor.chain().focus().toggleUnderline().run()}
+              className="aspect-square"
+              disabled={!editable}
+            >
+              <Underline className="size-4" />
+            </ToggleGroupItem>
+          </ToolTip>
         </ToggleGroup>
       </div>
 
       <Separator orientation="vertical" />
 
       <ToggleGroup type="single" className="gap-1" value={textAlign}>
-        <ToggleGroupItem
-          value="left"
-          aria-label="Align Left"
-          onClick={() => editor.chain().focus().setTextAlign("left").run()}
-          className="aspect-square"
-          disabled={!editable}
-        >
-          <AlignLeft className="size-4" />
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="center"
-          aria-label="Align Center"
-          onClick={() => editor.chain().focus().setTextAlign("center").run()}
-          className="aspect-square"
-          disabled={!editable}
-        >
-          <AlignCenter className="size-4" />
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="right"
-          aria-label="Align Right"
-          onClick={() => editor.chain().focus().setTextAlign("right").run()}
-          className="aspect-square"
-          disabled={!editable}
-        >
-          <AlignRight className="size-4" />
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="justify"
-          aria-label="Align Justify"
-          onClick={() => editor.chain().focus().setTextAlign("justify").run()}
-          className="aspect-square"
-          disabled={!editable}
-        >
-          <AlignJustify className="size-4" />
-        </ToggleGroupItem>
+        <ToolTip label="Align Left" show={editable}>
+          <ToggleGroupItem
+            value="left"
+            aria-label="Align Left"
+            onClick={() => editor.chain().focus().setTextAlign("left").run()}
+            className="aspect-square"
+            disabled={!editable}
+          >
+            <AlignLeft className="size-4" />
+          </ToggleGroupItem>
+        </ToolTip>
+        <ToolTip label="Align Center" show={editable}>
+          <ToggleGroupItem
+            value="center"
+            aria-label="Align Center"
+            onClick={() => editor.chain().focus().setTextAlign("center").run()}
+            className="aspect-square"
+            disabled={!editable}
+          >
+            <AlignCenter className="size-4" />
+          </ToggleGroupItem>
+        </ToolTip>
+        <ToolTip label="Align Right" show={editable}>
+          <ToggleGroupItem
+            value="right"
+            aria-label="Align Right"
+            onClick={() => editor.chain().focus().setTextAlign("right").run()}
+            className="aspect-square"
+            disabled={!editable}
+          >
+            <AlignRight className="size-4" />
+          </ToggleGroupItem>
+        </ToolTip>
+
+        <ToolTip label="Align Justify" show={editable}>
+          <ToggleGroupItem
+            value="justify"
+            aria-label="Align Justify"
+            onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+            className="aspect-square"
+            disabled={!editable}
+          >
+            <AlignJustify className="size-4" />
+          </ToggleGroupItem>
+        </ToolTip>
       </ToggleGroup>
 
       {showChars && (
@@ -272,12 +287,19 @@ const RichTextEditorToolbar = ({
           <span className="text-muted-foreground text-sm">
             {characterCount} characters
           </span>
-          <Button
-            variant="ghost-muted"
-            onClick={() => editor.setEditable(!editor.isEditable)}
-          >
-            {editable ? <Pen /> : <PenOff />}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost-muted"
+                onClick={() => editor.setEditable(!editor.isEditable)}
+              >
+                {editable ? <PenOff /> : <Pen />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {editable ? "Make Read-Only" : "Edit"}
+            </TooltipContent>
+          </Tooltip>
         </div>
       )}
     </div>

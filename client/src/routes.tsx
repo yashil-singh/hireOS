@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "@/components/layouts/RootLayout";
 import Dashboard from "@/components/pages/Dashboard";
-import Interviews from "@/components/pages/Interviews";
 import NotFound from "@/components/pages/NotFound";
 import Settings from "@/components/pages/Settings/Settings";
 import AuthLayout from "@/components/layouts/AuthLayout";
@@ -18,6 +17,11 @@ import LetterDetails from "./components/pages/Letters/LetterDetails";
 import SendLetter from "./components/pages/Letters/SendLetter";
 import DraftDetails from "./components/pages/Letters/DraftDetails";
 import Drafts from "./components/pages/Letters/Drafts";
+import SettingsLayout from "./components/layouts/SettingsLayout";
+import HiringProcess from "./components/pages/Settings/HiringProcess";
+import Calendar from "./components/pages/Calendar/Calendar";
+import EventDetails from "./components/pages/Calendar/EventDetails";
+import Interviewers from "./components/pages/Calendar/Interviewers";
 
 const router = createBrowserRouter([
   {
@@ -89,12 +93,36 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: "/interviews",
-        element: <Interviews />,
+        path: "/calendar",
+
+        children: [
+          {
+            index: true,
+            element: <Calendar />,
+          },
+          {
+            path: "event/:id",
+            element: <EventDetails />,
+          },
+        ],
+      },
+      {
+        path: "/interviewers",
+        element: <Interviewers />,
       },
       {
         path: "/settings",
-        element: <Settings />,
+        element: <SettingsLayout />,
+        children: [
+          {
+            index: true,
+            element: <Settings />,
+          },
+          {
+            path: "hiring-process",
+            element: <HiringProcess />,
+          },
+        ],
       },
     ],
   },

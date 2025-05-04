@@ -1,6 +1,8 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import sideBarReducer from "@store/sideBar/sideBarStore";
-import themeReducer from "@store/theme/themeSlice";
+import sideBarReducer from "@/lib/slices/sideBar/sideBarSlice";
+import themeReducer from "@/lib/slices/theme/themeSlice";
+import sessionReducer from "@/lib/slices/session/sessionSlice";
+import hringProcessReducer from "@/lib/slices/hiringProcess/hiringProcessSlice";
 import storage from "redux-persist/lib/storage";
 import { persistStore, persistReducer } from "redux-persist";
 
@@ -13,6 +15,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   sidebar: sideBarReducer,
   theme: themeReducer,
+  session: sessionReducer,
+  hiringProcess: hringProcessReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

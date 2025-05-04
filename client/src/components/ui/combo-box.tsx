@@ -34,7 +34,7 @@ export function Combobox({
 }) {
   return (
     <Popover>
-      <PopoverTrigger asChild>
+      <PopoverTrigger className="w-full" asChild>
         <Button
           variant="outline"
           role="combobox"

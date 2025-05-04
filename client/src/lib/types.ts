@@ -1,3 +1,5 @@
+import { CandidatePreview } from "@/services/candidates/type";
+import { HiringProcessStep } from "@/services/hiringProcess/types";
 import { LucideIcon } from "lucide-react";
 
 export type SelectOption = {
@@ -9,41 +11,27 @@ export type NavLink = {
   title: string;
   Icon: LucideIcon;
   to: string;
+  hasChild: boolean;
+  children?: {
+    title: string;
+    to: string;
+    Icon: LucideIcon;
+  }[];
 };
-
-export type Experience = {
-  jobTitle: string;
-  company: string;
-  startDate: string;
-  endDate: string;
-  duration: number;
-};
-
-export type Candidate = {
-  id: string;
-  name: string;
-  phone: string;
-  email: string;
-  level: string;
-  avatarUrl?: string;
-  technology: string[];
-  references: string[];
-  experience: Experience[];
-  salaryExpectation: string;
-  status: string;
-  resumeUrl: string;
-};
-
-export type CandidatePreview = Pick<
-  Candidate,
-  "id" | "name" | "email" | "avatarUrl"
->;
 
 export type Event = {
+  _id: string;
   title: string;
+  description: string;
+  step?: HiringProcessStep;
   status: "completed" | "pending" | "rejected";
-  timestamp: string;
-  events: { description: string; timestamp: string }[];
+  activities: {
+    _id: string;
+    title: string;
+    description: string;
+    createdAt: string;
+  }[];
+  createdAt: string;
 };
 
 export type Assessment = {

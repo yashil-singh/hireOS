@@ -1,16 +1,8 @@
+import DiscardChangesAlert from "@/components/dialogs/DiscardChangesAlert";
 import CandidateForm from "@/components/forms/Candidate/CandidateForm";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { candidateSchema } from "@/lib/schemas/candidateSchemas";
+import { useCreateCandidate } from "@/services/candidates/mutations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
@@ -21,6 +13,8 @@ import { z } from "zod";
 const AddCandidate = () => {
   const navigate = useNavigate();
   const [discardOpen, setDiscardOpen] = useState(false);
+
+  const createCandidate = useCreateCandidate();
 
   const defaultValues = {
     name: "",
@@ -41,7 +35,11 @@ const AddCandidate = () => {
   const { isDirty } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof candidateSchema>) => {
-    console.log("🚀 ~ AddCandidate.tsx:44 ~ values:", values);
+    await createCandidate.mutateAsync(values, {
+      onSuccess: () => {
+        form.reset();
+      },
+    });
   };
 
   return (
@@ -73,23 +71,11 @@ const AddCandidate = () => {
         <CandidateForm form={form} onSubmit={onSubmit} />
       </div>
 
-      <AlertDialog open={discardOpen} onOpenChange={setDiscardOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Discard changes?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action is irreversible. All progress will be lost, and you'll
-              need to re-enter all your information.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => navigate(-1)}>
-              Continue
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DiscardChangesAlert
+        open={discardOpen}
+        onOpenChange={setDiscardOpen}
+        onConfirm={() => navigate(-1)}
+      />
     </>
   );
 };

@@ -6,12 +6,12 @@ const AccountAvatar = ({
   avatarUrl,
   className,
 }: {
-  avatarUrl: string;
+  avatarUrl?: string;
   className?: string;
 }) => {
   return (
     <Avatar className={cn("size-12", className)}>
-      <AvatarImage src={avatarUrl} />
+      <AvatarImage referrerPolicy="no-referrer" src={avatarUrl} />
       <AvatarFallback>
         <img src={AvatarPlaceholder} />
       </AvatarFallback>

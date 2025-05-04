@@ -7,12 +7,17 @@ import AvatarPlaceholder from "@/assets/images/avatar-placeholder.png";
 
 import { NavLink, SelectOption } from "./types";
 import {
+  CalendarClock,
   CalendarDays,
+  FilePen,
   FileText,
   FileUser,
   LayoutDashboard,
   ListChecks,
+  Send,
   Settings,
+  Upload,
+  Users,
 } from "lucide-react";
 
 const NavLinks: NavLink[] = [
@@ -20,41 +25,78 @@ const NavLinks: NavLink[] = [
     title: "Dashboard",
     to: "/",
     Icon: LayoutDashboard,
+    hasChild: false,
   },
   {
     title: "Candidates",
     to: "/candidates",
     Icon: FileUser,
+    hasChild: true,
+    children: [
+      {
+        title: "Upload CV",
+        to: "/candidates/add",
+        Icon: Upload,
+      },
+    ],
   },
   {
     title: "Calendar",
-    to: "/interviews",
+    to: "/calendar",
     Icon: CalendarDays,
+    hasChild: true,
+    children: [
+      {
+        title: "Schedule Interview",
+        to: "/calendar?schedule=true",
+        Icon: CalendarClock,
+      },
+      {
+        title: "Interviewers",
+        to: "/interviewers",
+        Icon: Users,
+      },
+    ],
   },
   {
     title: "Assessments",
     to: "/assessments",
     Icon: ListChecks,
+    hasChild: false,
   },
   {
     title: "Letters",
     to: "/letters",
     Icon: FileText,
+    hasChild: true,
+    children: [
+      {
+        title: "Generate Letter",
+        to: "/letters/send",
+        Icon: Send,
+      },
+      {
+        title: "Drafts",
+        to: "/letters/drafts",
+        Icon: FilePen,
+      },
+    ],
   },
   {
     title: "Settings",
     to: "/settings",
     Icon: Settings,
+    hasChild: false,
   },
 ];
 
 const CandidateLevels = [
-  "Intern",
-  "Trainee",
-  "Associate",
-  "Junior",
-  "Mid-Level",
-  "Senior",
+  { label: "Intern", value: "intern" },
+  { label: "Trainee", value: "trainee" },
+  { label: "Associate", value: "associate" },
+  { label: "Junior", value: "junior" },
+  { label: "Mid-Level", value: "mid-level" },
+  { label: "Senior", value: "senior" },
 ];
 
 const CandidateStatus: SelectOption[] = [
@@ -149,6 +191,7 @@ const ACCEPTED_FILE_TYPES = [
 ];
 
 const DEFAULT_DATE_FORMAT = "do MMMM yyyy";
+const DEFAULT_TIME_FORMAT = "hh:mm a";
 
 export {
   Logo,
@@ -167,4 +210,5 @@ export {
   HIRING_STEPS,
   AssessmentTypes,
   DEFAULT_DATE_FORMAT,
+  DEFAULT_TIME_FORMAT,
 };

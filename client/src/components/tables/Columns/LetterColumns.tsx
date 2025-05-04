@@ -100,7 +100,7 @@ export const LetterColumns: ColumnDef<Letter>[] = [
               <Link to={`/letters/${id}`}>View Letter Details</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={`/candidates/${candidate.id}`}>
+              <Link to={`/candidates/${candidate._id}`}>
                 View Candidate Details
               </Link>
             </DropdownMenuItem>

@@ -14,8 +14,16 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { signup } from "@/services/auth";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/slices/store";
+import { setUser } from "@/lib/slices/session/sessionSlice";
+import { toast } from "sonner";
 
 const Signup = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const form = useForm<z.infer<typeof signupFormSceham>>({
     defaultValues: {
       name: "",
@@ -25,10 +33,19 @@ const Signup = () => {
     resolver: zodResolver(signupFormSceham),
   });
 
+  const signupMutation = useMutation({
+    mutationFn: signup,
+    onSuccess: ({ message, data }) => {
+      dispatch(setUser(data));
+      toast.success(message);
+    },
+    onError: ({ message }) => toast.error(message),
+  });
+
   const isSubmitting = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof signupFormSceham>) => {
-    console.log("🚀 ~ Signup.tsx:19 ~ values:", values);
+    await signupMutation.mutateAsync(values);
   };
 
   return (

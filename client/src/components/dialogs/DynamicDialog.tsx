@@ -86,7 +86,10 @@ const DynamicDialog = ({
       <DrawerContent>
         <div
           ref={scrollRef}
-          className="no-scrollbar mt-4 w-full space-y-4 overflow-y-auto p-4"
+          className={cn(
+            "no-scrollbar mt-4 w-full space-y-4 overflow-y-auto p-4",
+            className,
+          )}
         >
           <DrawerHeader className={cn("p-0", !showHeader && "sr-only")}>
             <DrawerTitle>{title}</DrawerTitle>

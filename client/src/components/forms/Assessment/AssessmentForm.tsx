@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from "../../ui/select";
 import { AssessmentTypes, Technologies } from "@/lib/constants";
-import { useEffect } from "react";
 import Dropzone from "../../shared/Dropzone";
 import { MultiSelect } from "@/components/ui/multi-select";
 
@@ -33,13 +32,6 @@ type AssessmentFormProps = {
 
 const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
   const { format } = form.watch();
-  const { setValue } = form;
-
-  useEffect(() => {
-    setValue("link", undefined);
-    setValue("assessmentFile", undefined);
-  }, [format, setValue]);
-
   return (
     <Form {...form}>
       <form

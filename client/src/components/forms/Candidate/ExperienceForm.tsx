@@ -19,9 +19,13 @@ import { z } from "zod";
 
 type ExperienceFormProps = {
   form: UseFormReturn<z.infer<typeof candidateSchema>>;
+  isSubmitting?: boolean;
 };
 
-const ExperienceForm = ({ form }: ExperienceFormProps) => {
+const ExperienceForm = ({
+  form,
+  isSubmitting = false,
+}: ExperienceFormProps) => {
   const {
     fields: experienceFields,
     append: appendExperience,
@@ -112,6 +116,21 @@ const ExperienceForm = ({ form }: ExperienceFormProps) => {
         <div key={field.id} className="h-fit space-y-2 rounded-md border p-4">
           <FormField
             control={form.control}
+            name={`experience.${index}.jobTitle`}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Job Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="Enter company name" {...field} />
+                </FormControl>
+
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name={`experience.${index}.company`}
             render={({ field }) => (
               <FormItem>
@@ -159,6 +178,7 @@ const ExperienceForm = ({ form }: ExperienceFormProps) => {
             variant="destructive"
             type="button"
             onClick={() => removeExperience(index)}
+            disabled={isSubmitting}
           >
             <Delete />
             Remove
@@ -283,6 +303,7 @@ const ExperienceForm = ({ form }: ExperienceFormProps) => {
           type="button"
           className="h-full w-full"
           variant="ghost"
+          disabled={isSubmitting}
         >
           <Plus /> Add
         </Button>

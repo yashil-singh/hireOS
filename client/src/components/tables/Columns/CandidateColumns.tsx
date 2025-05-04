@@ -16,7 +16,7 @@ import { Link } from "react-router-dom";
 import AccountAvatar from "@/components/shared/AccountAvatar";
 import { differenceInDays } from "date-fns";
 
-export const columns: ColumnDef<Candidate>[] = [
+export const CandidateColumns: ColumnDef<Candidate>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -64,8 +64,9 @@ export const columns: ColumnDef<Candidate>[] = [
   {
     accessorKey: "level",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Level" />
+      <DataTableColumnHeader column={column} title="Position" />
     ),
+    cell: ({ row }) => <p className="capitalize">{row.original.level}</p>,
   },
   {
     accessorKey: "experience",
@@ -86,8 +87,9 @@ export const columns: ColumnDef<Candidate>[] = [
       });
 
       if (totalDuration) {
-        const years = Math.floor(totalDuration / 365);
-        const months = totalDuration % 12;
+        const totalMonths = Math.floor(totalDuration / 30);
+        const years = Math.floor(totalMonths / 12);
+        const months = totalMonths % 12;
 
         if (years > 0) {
           filteredDuration += `${years} year${years > 1 ? "s" : ""}`;
@@ -111,6 +113,7 @@ export const columns: ColumnDef<Candidate>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
+    cell: ({ row }) => <p className="capitalize">{row.original.status}</p>,
   },
   {
     id: "actions",
@@ -134,13 +137,13 @@ export const columns: ColumnDef<Candidate>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to={`/candidates/${candidate.id}`}>View Details</Link>
+              <Link to={`/candidates/${candidate._id}`}>View Details</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to={`/candidates/edit/${candidate.id}`}>Edit Details</Link>
+              <Link to={`/candidates/edit/${candidate._id}`}>Edit Details</Link>
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(candidate.id)}
+              onClick={() => navigator.clipboard.writeText(candidate._id)}
             >
               Copy Candidate ID
             </DropdownMenuItem>

@@ -14,8 +14,25 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "@/services/auth";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/slices/store";
+import { setUser } from "@/lib/slices/session/sessionSlice";
 
 const Login = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const loginMutation = useMutation({
+    mutationFn: login,
+    onSuccess: ({ message, data }) => {
+      dispatch(setUser(data));
+      toast.success(message);
+    },
+    onError: ({ message }) => toast.error(message),
+  });
+
   const form = useForm<z.infer<typeof loginFormSchema>>({
     defaultValues: {
       email: "",
@@ -24,10 +41,10 @@ const Login = () => {
     resolver: zodResolver(loginFormSchema),
   });
 
-  const isSubmitting = form.formState.isSubmitting;
+  const { isSubmitting } = form.formState;
 
   const onSubmit = async (values: z.infer<typeof loginFormSchema>) => {
-    console.log("🚀 ~ Signup.tsx:19 ~ values:", values);
+    await loginMutation.mutateAsync(values);
   };
 
   return (

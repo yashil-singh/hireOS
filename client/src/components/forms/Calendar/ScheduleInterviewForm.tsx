@@ -8,14 +8,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-import { DatePicker } from "../shared/DatePicker";
-import { TimePicker } from "../shared/TimePicker";
-import { MultiSelect } from "../ui/multi-select";
-import { Button } from "../ui/button";
-import { Combobox } from "../ui/combo-box";
+} from "../../ui/form";
+import { DatePicker } from "../../shared/DatePicker";
+import { TimePicker } from "../../shared/TimePicker";
+import { MultiSelect } from "../../ui/multi-select";
+import { Combobox } from "../../ui/combo-box";
 import { cn } from "@/lib/utils";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
+import { useGetAllInterviewers } from "@/services/interviewer/queries";
+import { CircleAlert, Loader2 } from "lucide-react";
+import { useGetEligibleCandidates } from "@/services/candidates/queries";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import FormSubmitButton from "@/components/shared/FormSubmitButton";
 
 type ScheduleInterviewFormProps = {
   form: UseFormReturn<z.infer<typeof scheduleInterviewSchema>>;
@@ -28,6 +33,63 @@ const ScheduleInterviewForm = ({
   onSubmit,
   className,
 }: ScheduleInterviewFormProps) => {
+  const {
+    data: interviewersData,
+    isLoading: interviewersLoading,
+    isError: interviewersError,
+  } = useGetAllInterviewers();
+
+  const {
+    data: candidatesData,
+    isLoading: candidatesLoading,
+    isError: candiatesError,
+  } = useGetEligibleCandidates("interviewing");
+
+  useEffect(() => {
+    if (candidatesData) {
+      const candidates = candidatesData.data;
+      if (candidates.length < 1)
+        toast.info("No candidates are currently in the interview stage.");
+    }
+  }, [candidatesData]);
+
+  if (interviewersLoading || candidatesLoading)
+    return <Loader2 className="mx-auto size-5 animate-spin" />;
+
+  if (
+    interviewersError ||
+    candiatesError ||
+    !interviewersData ||
+    !candidatesData
+  )
+    return (
+      <p className="text-destructive flex items-center justify-center gap-1 text-center text-sm">
+        <CircleAlert className="size-5" /> Failed to load form.
+      </p>
+    );
+
+  const getCandidateOptions = (): { label: string; value: string }[] => {
+    const options: { label: string; value: string }[] = [];
+    for (const candidate of candidatesData.data) {
+      options.push({
+        label: `${candidate.name} - ${candidate.email}`,
+        value: candidate._id,
+      });
+    }
+    return options;
+  };
+
+  const getInterviewerOptions = (): { label: string; value: string }[] => {
+    const options: { label: string; value: string }[] = [];
+    for (const interviewer of interviewersData.data) {
+      options.push({
+        label: `${interviewer.name} - ${interviewer.email}`,
+        value: interviewer._id,
+      });
+    }
+    return options;
+  };
+
   return (
     <Form {...form}>
       <form
@@ -69,7 +131,7 @@ const ScheduleInterviewForm = ({
           )}
         />
 
-        <div className="flex w-full items-start gap-2">
+        <div className="grid w-full gap-2 md:grid-cols-2">
           <FormField
             control={form.control}
             name="startTime"
@@ -119,16 +181,7 @@ const ScheduleInterviewForm = ({
               <FormControl>
                 <Combobox
                   placeholder="Select Candidate"
-                  options={[
-                    {
-                      label: "Peter Parker - peter@gmail.com",
-                      value: "candidate-1",
-                    },
-                    {
-                      label: "Marry Jane - marry@gmail.com",
-                      value: "candidate-2",
-                    },
-                  ]}
+                  options={getCandidateOptions()}
                   value={field.value}
                   setValue={field.onChange}
                   error={!!form.formState.errors.candidate}
@@ -149,16 +202,7 @@ const ScheduleInterviewForm = ({
               <FormLabel>Interviewers</FormLabel>
               <FormControl>
                 <MultiSelect
-                  options={[
-                    {
-                      label: "Tony Stark - tony@gmail.com",
-                      value: "tony-stark-interviewer",
-                    },
-                    {
-                      label: "Steve Rogers - steve@gmail.com",
-                      value: "steve-rogers-interviewer",
-                    },
-                  ]}
+                  options={getInterviewerOptions()}
                   defaultValue={field.value}
                   onValueChange={field.onChange}
                   placeholder="Select Interviewers"
@@ -174,7 +218,7 @@ const ScheduleInterviewForm = ({
           )}
         />
 
-        <Button className="w-full">Confirm</Button>
+        <FormSubmitButton isSubmitting={form.formState.isSubmitting} />
       </form>
     </Form>
   );

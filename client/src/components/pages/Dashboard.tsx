@@ -1,5 +1,6 @@
 import {
   Activity,
+  ArrowLeftRight,
   Briefcase,
   Calendar,
   CircleX,
@@ -23,6 +24,7 @@ import DashboardCard from "../shared/DashboardCard";
 import RadialchartStacked from "../charts/radialchart-stacked";
 import Donutchart from "../charts/donutchart";
 import { Link } from "react-router-dom";
+import BarchartHorizontalStacked from "../charts/barchart-horizontal-stacked";
 
 const Dashboard = () => {
   return (
@@ -34,7 +36,7 @@ const Dashboard = () => {
           {/* Data Cards */}
           <div className="grid gap-4 sm:grid-cols-3">
             <DataCard
-              label="Uploaded CVs"
+              label="Uploads"
               Icon={FileUser}
               value={500}
               link="/candidates"
@@ -69,7 +71,7 @@ const Dashboard = () => {
                 </Link>
               </Button>
               <Button variant="ghost" asChild>
-                <Link to="/interviews?schedule=true">
+                <Link to="/calendar?schedule=true">
                   <Calendar /> Schedule Interview
                 </Link>
               </Button>
@@ -79,8 +81,8 @@ const Dashboard = () => {
                 </Link>
               </Button>
               <Button variant="ghost" asChild>
-                <Link to="/letters?generate=true">
-                  <FileText /> Generate Offer Letter
+                <Link to="/letters/send">
+                  <FileText /> Send Letter
                 </Link>
               </Button>
             </DashboardCard>
@@ -92,7 +94,7 @@ const Dashboard = () => {
               containerClassName="h-full md:col-span-2 max-h-[360px]"
               className="no-scrollbar space-y-4 overflow-y-auto"
             >
-              <div className="mb-4 flex items-center justify-between gap-4 rounded-xl">
+              <div className="justify-Fbetween mb-4 flex items-center gap-4 rounded-xl">
                 <div className="flex items-center gap-4">
                   <AccountAvatar avatarUrl="" className="hidden sm:block" />
                   <span>
@@ -132,63 +134,87 @@ const Dashboard = () => {
               </div>
             </span>
 
-            <Button size="sm" asChild>
-              <Link to={`/interviews/interview-1`}>View</Link>
+            <Button size="sm">
+              <Link to={`/calendar/event/event-1`}>View</Link>
             </Button>
           </div>
         </DashboardCard>
       </div>
 
       <div className="grid gap-4 2xl:grid-cols-6">
-        <DashboardCard
-          title="Recent Hires"
-          Icon={Briefcase}
-          containerClassName="h-fit 2xl:col-span-2"
-          className="space-y-4"
-        >
-          <Link
-            to={`/candidates/candidate-1`}
-            className="hover:bg-accent flex items-center justify-between gap-4 rounded-xl p-2 transition-colors"
+        <div className="space-y-4 2xl:col-span-2">
+          <DashboardCard
+            title="Recent Hires"
+            Icon={Briefcase}
+            className="space-y-4"
           >
-            <div className="flex items-center gap-4">
-              <AccountAvatar avatarUrl="" className="hidden sm:block" />
-              <span>
-                <span className="text-sm font-bold">Candidate Name</span>
-                <p className="text-sm">candidate@gmail.com</p>
-              </span>
-            </div>
+            <Link
+              to={`/candidates/candidate-1`}
+              className="hover:bg-accent flex items-center justify-between gap-4 rounded-xl p-2 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <AccountAvatar avatarUrl="" className="hidden sm:block" />
+                <span>
+                  <span className="text-sm font-bold">Candidate Name</span>
+                  <p className="text-sm">candidate@gmail.com</p>
+                </span>
+              </div>
 
-            <span className="text-xs font-medium md:text-sm">25th Apr</span>
-          </Link>
-          <Link
-            to={`/candidates/candidate-1`}
-            className="hover:bg-accent flex items-center justify-between gap-4 rounded-xl p-2 transition-colors"
+              <span className="text-xs font-medium md:text-sm">25th Apr</span>
+            </Link>
+            <Link
+              to={`/candidates/candidate-1`}
+              className="hover:bg-accent flex items-center justify-between gap-4 rounded-xl p-2 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <AccountAvatar avatarUrl="" className="hidden sm:block" />
+                <span>
+                  <span className="text-sm font-bold">Candidate Name</span>
+                  <p className="text-sm">candidate@gmail.com</p>
+                </span>
+              </div>
+
+              <span className="text-xs font-medium md:text-sm">25th Apr</span>
+            </Link>
+            <Link
+              to={`/candidates/candidate-1`}
+              className="hover:bg-accent flex items-center justify-between gap-4 rounded-xl p-2 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <AccountAvatar avatarUrl="" className="hidden sm:block" />
+                <span>
+                  <span className="text-sm font-bold">Candidate Name</span>
+                  <p className="text-sm">candidate@gmail.com</p>
+                </span>
+              </div>
+
+              <span className="text-xs font-medium md:text-sm">25th Apr</span>
+            </Link>
+            <Link
+              to={`/candidates/candidate-1`}
+              className="hover:bg-accent flex items-center justify-between gap-4 rounded-xl p-2 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <AccountAvatar avatarUrl="" className="hidden sm:block" />
+                <span>
+                  <span className="text-sm font-bold">Candidate Name</span>
+                  <p className="text-sm">candidate@gmail.com</p>
+                </span>
+              </div>
+
+              <span className="text-xs font-medium md:text-sm">25th Apr</span>
+            </Link>
+          </DashboardCard>
+
+          <DashboardCard
+            title="Conversion Rates"
+            Icon={ArrowLeftRight}
+            containerClassName="2xl:col-span-2"
+            className="space-y-4"
           >
-            <div className="flex items-center gap-4">
-              <AccountAvatar avatarUrl="" className="hidden sm:block" />
-              <span>
-                <span className="text-sm font-bold">Candidate Name</span>
-                <p className="text-sm">candidate@gmail.com</p>
-              </span>
-            </div>
-
-            <span className="text-xs font-medium md:text-sm">25th Apr</span>
-          </Link>
-          <Link
-            to={`/candidates/candidate-1`}
-            className="hover:bg-accent flex items-center justify-between gap-4 rounded-xl p-2 transition-colors"
-          >
-            <div className="flex items-center gap-4">
-              <AccountAvatar avatarUrl="" className="hidden sm:block" />
-              <span>
-                <span className="text-sm font-bold">Candidate Name</span>
-                <p className="text-sm">candidate@gmail.com</p>
-              </span>
-            </div>
-
-            <span className="text-xs font-medium md:text-sm">25th Apr</span>
-          </Link>
-        </DashboardCard>
+            <BarchartHorizontalStacked />
+          </DashboardCard>
+        </div>
 
         <div className="grid gap-4 xl:grid-cols-2 2xl:col-span-4">
           <div className="flex flex-col gap-4">

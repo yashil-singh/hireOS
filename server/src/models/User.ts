@@ -1,6 +1,6 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
-export interface User extends Document {
+export interface IUser extends Document {
   name: string;
   email: string;
   password?: string;
@@ -12,7 +12,7 @@ export interface User extends Document {
   updatedAt: Date;
 }
 
-const userSchema = new Schema<User>(
+const userSchema = new Schema<IUser>(
   {
     email: { type: String, required: true, unique: true },
     password: { type: String, select: false },
@@ -31,10 +31,5 @@ const userSchema = new Schema<User>(
     timestamps: true,
   }
 );
-
-userSchema.methods.isPassword = function (password: string): boolean {
-  return this.provider === "form" && this.password === password;
-};
-
-const User = mongoose.model<User>("User", userSchema);
+const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 export default User;

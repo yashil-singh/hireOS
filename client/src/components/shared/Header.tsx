@@ -3,15 +3,12 @@ import {
   LogOut,
   Moon,
   Pen,
-  Search,
   Settings,
   Sidebar,
   Sun,
   SunMoon,
-  X,
 } from "lucide-react";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,23 +18,28 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/lib/stores/store";
-import { toggleCollapse } from "@/lib/stores/sideBar/sideBarStore";
+import { AppDispatch, RootState } from "@/lib/slices/store";
+import { toggleCollapse } from "@/lib/slices/sideBar/sideBarSlice";
 import MobileSidebar from "./MobileSidebar";
 import {
   setDarkTheme,
   setLightTheme,
   setSystemTheme,
-} from "@/lib/stores/theme/themeSlice";
+} from "@/lib/slices/theme/themeSlice";
 import { Favicon } from "@/lib/constants";
 import AccountAvatar from "./AccountAvatar";
 import { Link } from "react-router-dom";
 import { AlertDialog, AlertDialogTrigger } from "../ui/alert-dialog";
 import LogoutAlert from "../dialogs/LogoutAlert";
+import { useState } from "react";
+import SearchDialog from "../dialogs/SearchDialog";
 
 const Header = () => {
   const dispatch = useDispatch<AppDispatch>();
   const theme = useSelector((state: RootState) => state.theme.theme);
+  const user = useSelector((state: RootState) => state.session.user);
+
+  const [searchOpen, setSearchOpen] = useState(false);
 
   return (
     <header className="blur-backdrop header-h sticky top-0 z-10 flex w-full items-center justify-between border-b px-4">
@@ -53,40 +55,7 @@ const Header = () => {
           <Sidebar className="header-icon" />
         </Button>
 
-        <Input
-          placeholder="Search for CVs..."
-          className="bg-background hidden w-full max-w-[300px] lg:block"
-        />
-
-        <DropdownMenu>
-          <DropdownMenuTrigger className="lg:hidden" asChild>
-            <Button variant="outline" size="icon">
-              <Search className="header-icon" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-[280px] px-3 pb-4">
-            <DropdownMenuLabel>Search</DropdownMenuLabel>
-
-            <Input placeholder="Search for CVs..." className="h-9" />
-
-            <DropdownMenuLabel>Recent Searches</DropdownMenuLabel>
-
-            <ul className="space-y-1">
-              <li className="flex items-center justify-between px-2 text-sm">
-                <button className="w-full text-left">Yashil</button>
-                <button>
-                  <X className="size-4" />
-                </button>
-              </li>
-              <li className="flex items-center justify-between px-2 text-sm">
-                <button className="w-full text-left">Yashil</button>
-                <button>
-                  <X className="size-4" />
-                </button>
-              </li>
-            </ul>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
       </div>
 
       <img src={Favicon} className="h-8 lg:hidden" />
@@ -125,21 +94,22 @@ const Header = () => {
 
         <AlertDialog>
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2">
-              <AccountAvatar avatarUrl="" />
+            <DropdownMenuTrigger className="flex items-center gap-1 outline-none">
+              <AccountAvatar avatarUrl={user?.avatarUrl} />
               <div className="hidden text-left text-sm lg:block">
-                <p className="font-medium">Yashil Lal Singh</p>
-                <p className="text-muted-foreground">yashil@gmail.com</p>
+                <p className="font-medium">{user?.name}</p>
+                <p className="text-muted-foreground">{user?.email}</p>
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <div className="flex w-[250px] items-center gap-2 p-2">
-                <AccountAvatar className="size-10" avatarUrl="" />
+              <div className="flex w-[250px] items-center gap-1 p-2">
+                <AccountAvatar
+                  className="size-10"
+                  avatarUrl={user?.avatarUrl}
+                />
                 <div>
-                  <p className="font-medium">Yashil Lal Singh</p>
-                  <p className="text-muted-foreground text-sm">
-                    yashil@gmail.com
-                  </p>
+                  <p className="font-medium">{user?.name}</p>
+                  <p className="text-muted-foreground text-sm">{user?.email}</p>
                 </div>
               </div>
 

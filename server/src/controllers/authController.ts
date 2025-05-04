@@ -16,6 +16,7 @@ import User from "@/models/User";
 import { Request, Response } from "express";
 import axios from "axios";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import { AuthenticatedRequest } from "@/lib/types";
 
 const JWKS = createRemoteJWKSet(
   new URL("https://www.googleapis.com/oauth2/v3/certs")
@@ -76,7 +77,7 @@ export const googleCallback = async (req: Request, res: Response) => {
       return throwError("Please use email and password to login.");
 
     payload = {
-      id: existingUser._id as string,
+      id: (existingUser._id as string).toString(),
       email: existingUser.email,
     };
   } else {
@@ -105,6 +106,7 @@ export const googleCallback = async (req: Request, res: Response) => {
 
 export const googleOneTap = async (req: Request, res: Response) => {
   const { credential } = req.body;
+  console.log("🚀 ~ authController.ts:109 ~ credential:", credential);
 
   const { payload } = await jwtVerify(credential, JWKS, {
     issuer: "https://accounts.google.com",
@@ -136,12 +138,19 @@ export const googleOneTap = async (req: Request, res: Response) => {
   }
 
   const token = await generateToken({
-    id: user._id as string,
+    id: (user._id as string).toString(),
     email: user.email,
   });
   setCookieToken(res, token);
 
-  successResponse({ res, message: "Logged in." });
+  const data = {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    avatarUrl: user.avatar ?? "",
+  };
+
+  successResponse({ res, message: "Logged in.", data });
 };
 
 export const signup = async (req: Request, res: Response) => {
@@ -162,7 +171,7 @@ export const signup = async (req: Request, res: Response) => {
   const user = await newUser.save();
 
   const payload = {
-    id: user._id as string,
+    id: (user._id as string).toString(),
     email: user.email,
   };
 
@@ -190,7 +199,7 @@ export const login = async (req: Request, res: Response) => {
   if (!isValidPassword) return throwError("Invalid email or password.");
 
   const payload = {
-    id: existingUser._id as string,
+    id: (existingUser._id as string).toString(),
     email: existingUser.email,
   };
 
@@ -198,7 +207,14 @@ export const login = async (req: Request, res: Response) => {
 
   setCookieToken(res, token);
 
-  successResponse({ res, message: "Logged in." });
+  const user = {
+    _id: existingUser._id,
+    name: existingUser.name,
+    email: existingUser.email,
+    avatarUrl: existingUser.avatar ?? "",
+  };
+
+  successResponse({ res, message: "Logged in.", data: user });
 };
 
 export const logout = async (req: Request, res: Response) => {
@@ -209,4 +225,11 @@ export const logout = async (req: Request, res: Response) => {
   });
 
   successResponse({ res, message: "Logged out." });
+};
+
+export const userData = async (req: Request, res: Response) => {
+  res.setHeader("Cache-Control", "no-store");
+
+  const user = (req as AuthenticatedRequest).user;
+  successResponse({ res, data: user });
 };

@@ -14,7 +14,7 @@ import {
   Check,
   Download,
   EllipsisVertical,
-  Eye,
+  Info,
   LinkIcon,
   Pen,
   RotateCcw,
@@ -28,12 +28,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -106,8 +101,10 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
 
   const onAssignDialogOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
-      setAssignCancelDialog(true);
-      return;
+      if (assignForm.formState.isDirty) {
+        setAssignCancelDialog(true);
+        return;
+      }
     }
 
     setIsAssigning(isOpen);
@@ -131,23 +128,24 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
             </span>
 
             <DropdownMenu>
-              <TooltipProvider>
-                <Tooltip delayDuration={1000}>
-                  <TooltipTrigger asChild>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <EllipsisVertical />
-                      </Button>
-                    </DropdownMenuTrigger>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="text-xs">More</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <EllipsisVertical />
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">More</p>
+                </TooltipContent>
+              </Tooltip>
 
               <DropdownMenuContent align="end">
                 <DropdownMenuGroup>
+                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                    <Pen /> Edit
+                  </DropdownMenuItem>
                   {assessment.format === "file" ? (
                     <DropdownMenuItem>
                       <Download /> Download
@@ -209,7 +207,7 @@ You must select at least one candidate before proceeding."
             open={isAssigning}
             onOpenChange={onAssignDialogOpenChange}
             trigger={
-              <Button variant="ghost">
+              <Button>
                 <Check /> Assign
               </Button>
             }
@@ -219,27 +217,23 @@ You must select at least one candidate before proceeding."
             <AssignAssessmentForm form={assignForm} onSubmit={onAssign} />
           </DynamicDialog>
 
-          <DynamicDialog
-            title="Edit assessment"
-            description="Create and upload assessment materials and assign them to selected candidates. You can include optional notes and set a deadline."
-            open={isEditing}
-            onOpenChange={onEditDialogOpenChange}
-            trigger={
-              <Button variant="ghost">
-                <Pen /> Edit
-              </Button>
-            }
-          >
-            <AssessmentForm form={editForm} onSubmit={onEdit} />
-          </DynamicDialog>
-
-          <Button variant="ghost" asChild>
+          <Button variant="outline" asChild>
             <Link to={`/assessments/${assessment.id}`}>
-              <Eye /> View
+              <Info /> Details
             </Link>
           </Button>
         </CardFooter>
       </Card>
+
+      <DynamicDialog
+        title="Edit assessment"
+        description="Create and upload assessment materials and assign them to selected candidates. You can include optional notes and set a deadline."
+        open={isEditing}
+        onOpenChange={onEditDialogOpenChange}
+        trigger={<></>}
+      >
+        <AssessmentForm form={editForm} onSubmit={onEdit} />
+      </DynamicDialog>
 
       <DiscardChangesAlert
         open={editCancelDialog}

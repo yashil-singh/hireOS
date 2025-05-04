@@ -30,3 +30,12 @@ export const DELETE = async (endpoint: string = "") => {
   const response = await api.delete(endpoint);
   return response.data;
 };
+
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    const message =
+      err.response?.data?.message || err.message || "Something went wrong";
+    return Promise.reject({ message, status: err.response?.status });
+  },
+);

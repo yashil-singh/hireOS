@@ -1,56 +1,42 @@
-import { HIRING_STEPS } from "@/lib/constants";
 import { Event } from "@/lib/types";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
-import { Flag, Trophy, X } from "lucide-react";
+import { Flag, X } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/slices/store";
 
 const CandidateTimeline = ({ events }: { events: Event[] }) => {
-  const isHired = events.some((event) => event.title.toLowerCase() === "hired");
+  console.log("🚀 ~ CandidateTimeline.tsx:9 ~ events:", events);
+
+  const steps = useSelector((state: RootState) => state.hiringProcess.steps);
+  const thridInterview = steps.find((step) => step.title.includes("third"));
 
   const buildTimeline = () => {
     const timeline = [];
-    let hasRejected = false;
+
     const hasThirdInterview = events.some(
-      (event) => event.title.toLowerCase() === "third interview",
+      (event) => event.step?.title === thridInterview?.title,
     );
 
-    for (const step of HIRING_STEPS) {
-      // Skip all steps if rejected
-      if (hasRejected) break;
+    const rejectionEventIndex = events.findIndex(
+      (event) => event.title.toLowerCase() === "rejected",
+    );
 
-      // Actual event and rejected case as well
-      const currentEvent = events.find(
-        (event) =>
-          event.title === step || event.title.toLowerCase() === "rejected",
-      );
-
-      // if there is no third interview skip rendering it
-      if (step.toLowerCase() === "third interview" && !hasThirdInterview) {
+    for (const step of steps) {
+      if (step.title.toLowerCase() === "third-interview" && !hasThirdInterview)
         continue;
-      }
+
+      const currentEvent = events.find((event) => event.step?._id === step._id);
 
       if (currentEvent) {
-        // Show rejected if current event is rejection event
-        if (currentEvent.title.toLocaleLowerCase() === "rejected") {
+        timeline.push({ label: step.title, status: "completed" });
+
+        if (rejectionEventIndex > -1 && step.step === rejectionEventIndex + 1) {
           timeline.push({ label: "Rejected", status: "rejected" });
-          hasRejected = true;
-        } else {
-          timeline.push({ label: currentEvent.title, status: "completed" });
+          break;
         }
       } else {
-        // future steps
-        timeline.push({ label: step, status: "pending" });
-      }
-    }
-
-    if (!hasRejected) {
-      const rejectedEvent = events.find(
-        (event) => event.title.toLowerCase() === "rejected",
-      );
-
-      if (rejectedEvent) {
-        timeline.push({ label: "Rejected", status: "rejected" });
-        hasRejected = true;
+        timeline.push({ label: step.title, status: "pending" });
       }
     }
 
@@ -93,7 +79,7 @@ const CandidateTimeline = ({ events }: { events: Event[] }) => {
           </Badge>
           <p
             className={cn(
-              "mt-2 text-sm font-semibold",
+              "mt-2 text-sm font-semibold capitalize",
               step.status === "rejected" && "text-red-500",
               step.status !== "completed" &&
                 step.status !== "rejected" &&
@@ -104,23 +90,6 @@ const CandidateTimeline = ({ events }: { events: Event[] }) => {
           </p>
         </div>
       ))}
-
-      <div className="z-0 flex flex-col items-center">
-        <Trophy
-          className={cn(
-            "bg-card text-muted-foreground z-0",
-            isHired && "text-primary",
-          )}
-        />
-        <p
-          className={cn(
-            "text-muted-foreground mt-2 text-sm font-semibold",
-            isHired && "text-foreground",
-          )}
-        >
-          Hired
-        </p>
-      </div>
     </div>
   );
 };

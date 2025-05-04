@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { CandidateLevels, Technologies } from "@/lib/constants";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { Loader2 } from "lucide-react";
 
 type CandidateFormProps = {
   form: UseFormReturn<z.infer<typeof candidateSchema>>;
@@ -31,6 +32,8 @@ type CandidateFormProps = {
 };
 
 const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
+  const { isSubmitting } = form.formState;
+
   return (
     <Form {...form}>
       <form
@@ -109,7 +112,7 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             <Label>Candidate's Experience</Label>
 
             <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-              <ExperienceForm form={form} />
+              <ExperienceForm form={form} isSubmitting={isSubmitting} />
             </div>
           </div>
 
@@ -155,6 +158,7 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
                     variant="inverted"
                     maxCount={3}
                     error={!!form.formState.errors.technology}
+                    {...field}
                   />
                 </FormControl>
 
@@ -173,24 +177,20 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
-                    {...field}
                   >
                     <SelectTrigger
-                      className={cn(
-                        "h-12! w-full",
-                        form.formState.errors.level &&
-                          "border-destructive focus-visible:ring-destructive/20 border",
-                      )}
+                      className="h-12! w-full"
+                      aria-invalid={!!form.formState.errors.level}
                     >
                       <SelectValue placeholder="Select candidate position" />
                     </SelectTrigger>
                     <SelectContent>
                       {CandidateLevels.map((level) => (
                         <SelectItem
-                          value={level}
-                          key={`add-form-level-${level}`}
+                          value={level.value}
+                          key={`add-form-level-${level.value}`}
                         >
-                          {level}
+                          {level.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -224,7 +224,10 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
         </div>
 
         {/* Submit */}
-        <Button className="mt-4 w-full">Confirm</Button>
+        <Button className="mt-4 w-full" disabled={isSubmitting}>
+          {isSubmitting && <Loader2 className="animate-spin" />}
+          {isSubmitting ? "Submitting" : "Submit"}
+        </Button>
       </form>
     </Form>
   );

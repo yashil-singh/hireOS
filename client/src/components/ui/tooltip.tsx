@@ -17,11 +17,16 @@ function TooltipProvider({
 }
 
 function Tooltip({
+  delayDuration = 500,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
   return (
     <TooltipProvider>
-      <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+      <TooltipPrimitive.Root
+        data-slot="tooltip"
+        delayDuration={delayDuration}
+        {...props}
+      />
     </TooltipProvider>
   );
 }
@@ -34,7 +39,7 @@ function TooltipTrigger({
 
 function TooltipContent({
   className,
-  sideOffset = 0,
+  sideOffset = 5,
   children,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content>) {

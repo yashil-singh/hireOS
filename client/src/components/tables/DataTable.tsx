@@ -23,7 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DataTablePagination } from "@/components/tables/DataTablePagination";
 import { DataTableViewOptions } from "@/components/tables/DataTableViewOptions";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import DynamicDialog from "../dialogs/DynamicDialog";
 import SearchInput from "../shared/SearchInput";
@@ -31,13 +31,14 @@ import SearchInput from "../shared/SearchInput";
 interface DataTableProps<TData, TValue> {
   topChildren?: React.ReactNode;
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  data: TData[] | undefined;
   searchableColumns?: string[];
   addDataForm?: React.ReactNode;
   addDataTitle: string;
   addDataDescription: string;
   searchPlaceholder?: string;
   initialSearchQuery?: string;
+  isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
@@ -50,6 +51,7 @@ export function DataTable<TData, TValue>({
   addDataDescription,
   searchPlaceholder,
   initialSearchQuery,
+  isLoading = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -60,7 +62,7 @@ export function DataTable<TData, TValue>({
   const [open, setOpen] = useState(false);
 
   const table = useReactTable({
-    data,
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -107,7 +109,7 @@ export function DataTable<TData, TValue>({
   return (
     <div className="mt-4 space-y-4">
       {/* Filters */}
-      <div className="flex flex-col gap-2 md:flex-row md:items-center">
+      <div className="flex flex-col gap-2 md:flex-row md:items-end">
         {searchableColumns && searchableColumns.length > 0 && (
           <div className="w-full space-y-2">
             <SearchInput
@@ -115,6 +117,7 @@ export function DataTable<TData, TValue>({
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="w-full max-w-[500px]"
+              onClear={() => setGlobalFilter("")}
             />
             {searchPlaceholder && (
               <Label className="text-muted-foreground text-xs">
@@ -167,7 +170,16 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-14 text-center"
+                >
+                  <Loader2 className="mx-auto animate-spin" />
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}

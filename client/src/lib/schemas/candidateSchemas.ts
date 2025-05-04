@@ -43,6 +43,7 @@ export const candidateSchema = z.object({
     .array(
       z
         .object({
+          jobTitle: z.string().min(1, "Job title is required."),
           company: z.string().min(1, "Company name is required."),
           startDate: z.string().min(1, "Start date is required."),
           endDate: z.string().min(1, "End date is required."),

@@ -1,36 +1,46 @@
 import { GoogleLogo, Logo, Profiling } from "@/lib/constants";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Github } from "lucide-react";
-import { googleLogin } from "@/services/auth/api";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
-import { POST } from "@/services/api";
 import { toast } from "sonner";
+import { googleLogin, googleOneTapLogin } from "@/services/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/slices/store";
+import { setUser } from "@/lib/slices/session/sessionSlice";
+import { useMutation } from "@tanstack/react-query";
 
 const AuthLayout = () => {
-  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.session.user);
+  const dispatch = useDispatch<AppDispatch>();
 
-  useGoogleOneTapLogin({
-    onSuccess: async (credentialResponse) => {
-      try {
-        const response = await POST("/auth/google/one-tap", {
-          credential: credentialResponse.credential,
-        });
-
-        if (response.success) {
-          toast.success(response.message);
-          navigate("/");
-        }
-      } catch (error) {
-        console.error(error);
-      }
+  const googleOneTapMutation = useMutation({
+    mutationFn: googleOneTapLogin,
+    onSuccess: ({ message, data }) => {
+      dispatch(setUser(data));
+      toast.success(message);
     },
-    onError: () => {
-      console.log("Login Failed");
+    onError: ({ message }) => {
+      toast.error(message);
     },
   });
 
-  return (
+  useGoogleOneTapLogin({
+    onSuccess: async (credentialResponse) => {
+      googleOneTapMutation.mutateAsync({
+        credential: credentialResponse.credential,
+      });
+    },
+    onError: () => {
+      toast.error("An unexpected error occured. Try again later.");
+    },
+    auto_select: false,
+    disabled: !!user,
+  });
+
+  return user ? (
+    <Navigate to="/" />
+  ) : (
     <div className="relative flex h-screen w-full justify-center p-4 md:gap-12 md:p-8 xl:gap-24">
       <div className="absolute top-8 left-1/2 flex flex-col items-end max-md:-translate-x-1/2 md:left-8">
         <img src={Logo} className="h-8 md:h-10" />

@@ -1,10 +1,16 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import Header from "../shared/Header";
 import Sidebar from "../shared/Sidebar";
 import { ScrollRestoration } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/slices/store";
 
 const RootLayout = () => {
-  return (
+  const user = useSelector((state: RootState) => state.session.user);
+
+  return !user ? (
+    <Navigate to="/login" />
+  ) : (
     <div className="flex">
       <ScrollRestoration />
 

@@ -11,6 +11,12 @@ import errorHandler from "./middlewares/errorHandler";
 import authRoutes from "@/routes/authRoutes";
 import candidateRoutes from "@/routes/candidateRoutes";
 import assessmentRoutes from "@/routes/assessmentRoutes";
+import hiringProcessRoutes from "@/routes/hiringProcessRoutes";
+import eventRoutes from "@/routes/eventRoutes";
+import interviewerRoutes from "@/routes/interviewerRoutes";
+import interviewRoutes from "@/routes/interviewRoutes";
+import { seedHiringSteps } from "./controllers/hiringProcessController";
+import { authenticate } from "./middlewares/authenticate";
 
 dotenv.config();
 
@@ -30,10 +36,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 app.use("/api/auth", authRoutes);
-app.use("/api/candidates", candidateRoutes);
-app.use("/api/assessments", assessmentRoutes);
+app.use("/api/candidates", authenticate, candidateRoutes);
+app.use("/api/assessments", authenticate, assessmentRoutes);
+app.use("/api/hiring-process", authenticate, hiringProcessRoutes);
+app.use("/api/events", authenticate, eventRoutes);
+app.use("/api/interviewers", authenticate, interviewerRoutes);
+app.use("/api/calendar", authenticate, interviewRoutes);
 
 connectDB();
+
+const seed = async () => {
+  await seedHiringSteps();
+};
+
+seed();
 
 app.use(errorHandler);
 

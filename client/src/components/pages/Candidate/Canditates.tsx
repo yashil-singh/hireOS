@@ -1,23 +1,26 @@
-import CandidateData from "@/assets/data/Candidates";
-import { useEffect } from "react";
-import { getCandidates } from "@/services/candidates/api";
 import { DataTable } from "@/components/tables/DataTable";
-import { columns } from "@/components/tables/CandidateProfile/Columns";
+import { CandidateColumns } from "@/components/tables/Columns/CandidateColumns";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useGetAllCandidates } from "@/services/candidates/queries";
+import { useEffect } from "react";
+import { toast } from "sonner";
 
 const Candidates = () => {
   const [searchParams] = useSearchParams();
   const initialSearchQuery = searchParams.get("search") ?? "";
-  useEffect(() => {
-    const fetchCandidates = async () => {
-      const response = await getCandidates();
-      console.log("🚀 ~ CanditateProfiles.tsx:12 ~ response:", response);
-    };
 
-    fetchCandidates();
-  }, []);
+  const { data, isLoading, error } = useGetAllCandidates();
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Error getting candidate data.", {
+        description: error.message,
+      });
+    }
+  }, [error]);
+
   return (
     <>
       <h1 className="page-heading">Candidates</h1>
@@ -26,8 +29,8 @@ const Candidates = () => {
       </p>
 
       <DataTable
-        columns={columns}
-        data={CandidateData}
+        columns={CandidateColumns}
+        data={data?.data}
         searchableColumns={[
           "id",
           "name",
@@ -47,6 +50,7 @@ const Candidates = () => {
             </Link>
           </Button>
         }
+        isLoading={isLoading}
       />
     </>
   );

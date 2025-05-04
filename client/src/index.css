@@ -62,7 +62,7 @@
   --primary-foreground: oklch(0.985 0 0);
 
   --secondary: oklch(0.24 0.0713 252.01);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
 
   --muted: oklch(0.31 0 0);
   --muted-foreground: oklch(0.708 0 0);
@@ -227,7 +227,7 @@
   }
 
   .fc-button-primary {
-    @apply hover:bg-accent! text-primary! rounded-lg! border-none! bg-transparent! transition-colors! focus:shadow-none! disabled:cursor-not-allowed;
+    @apply text-primary! hover:bg-primary/10! rounded-lg! border-none! bg-transparent! transition-colors! focus:shadow-none! disabled:cursor-not-allowed;
   }
 
   .fc-today-button {
@@ -248,6 +248,14 @@
 
   .fc-popover-header {
     @apply px-4! text-sm! font-semibold!;
+  }
+
+  .fc-highlight {
+    @apply bg-secondary/20! dark:bg-secondary/40!;
+  }
+
+  .fc-day-today {
+    @apply bg-secondary/50! dark:bg-secondary/70! text-primary-foreground!;
   }
 }
 

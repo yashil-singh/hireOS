@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { LogOut } from "lucide-react";
 import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
-import { RootState } from "@/lib/stores/store";
+import { RootState } from "@/lib/slices/store";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import LogoutDialog from "../dialogs/LogoutAlert";
@@ -16,12 +16,12 @@ const Sidebar = () => {
   return (
     <aside
       className={cn(
-        "sticky top-0 left-0 hidden h-screen flex-col justify-between border-r transition-all lg:flex",
+        "sticky top-0 left-0 hidden h-screen flex-col justify-between overflow-y-auto border-r transition-all lg:flex",
         isCollapsed ? "w-20" : "w-96",
       )}
     >
       <section>
-        <header className="header-h flex items-center border-b px-4">
+        <header className="header-h bg-background sticky top-0 flex items-center border-b px-4">
           <img
             src={Logo}
             className={isCollapsed ? "hidden" : "hidden h-8 md:block"}

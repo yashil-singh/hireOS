@@ -3,7 +3,6 @@ import AccountAvatar from "@/components/shared/AccountAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { assignAssessmentSchema } from "@/lib/schemas/assessmentSchemas";
 import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
@@ -64,18 +64,24 @@ const AssignAssessmentForm = ({
                   <div className="space-y-4">
                     {Candidates.map((candidate) => (
                       <Card
-                        key={candidate.id}
+                        key={candidate._id}
                         className={`cursor-pointer flex-row items-center gap-4 p-4 ${
-                          selected.includes(candidate.id)
+                          selected.includes(candidate._id)
                             ? "border-primary bg-primary/10"
                             : "border-muted"
                         }`}
-                        // onClick={() => toggleCandidate(candidate.id)}
+                        onClick={() => toggleCandidate(candidate._id)}
                       >
-                        <Checkbox
-                          checked={selected.includes(candidate.id)}
-                          onCheckedChange={() => toggleCandidate(candidate.id)}
-                        />
+                        <div
+                          className={cn(
+                            "flex size-5 items-center justify-center rounded border",
+                            selected.includes(candidate._id) && "bg-primary",
+                          )}
+                        >
+                          {selected.includes(candidate._id) && (
+                            <Check className="text-primary-foreground size-4" />
+                          )}
+                        </div>
                         <div className="flex gap-4">
                           <AccountAvatar
                             avatarUrl={candidate.avatarUrl ?? ""}
@@ -87,7 +93,7 @@ const AssignAssessmentForm = ({
                             </p>
                             <span className="mt-2 space-x-1">
                               {candidate.technology.map((tech, index) => (
-                                <Badge key={`${candidate.id}-tech-${index}`}>
+                                <Badge key={`${candidate._id}-tech-${index}`}>
                                   {tech}
                                 </Badge>
                               ))}

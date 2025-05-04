@@ -9,8 +9,9 @@ const ToTopButton = () => {
     isVisible && (
       <Button
         onClick={scrollToTop}
-        className="fixed bottom-4 left-1/2 z-50 translate-x-1/2 transform rounded-full p-3"
+        className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 rounded-full p-3"
         size="icon"
+        variant="secondary"
       >
         <ArrowUp className="size-5" />
       </Button>
