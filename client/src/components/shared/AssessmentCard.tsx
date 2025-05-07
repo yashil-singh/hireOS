@@ -1,4 +1,3 @@
-import { Assessment } from "@/lib/types";
 import {
   Card,
   CardContent,
@@ -31,7 +30,6 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import {
   assessmentSchema,
   assignAssessmentSchema,
@@ -43,16 +41,20 @@ import DynamicDialog from "../dialogs/DynamicDialog";
 import { Link } from "react-router-dom";
 import AssignAssessmentForm from "../forms/Assessment/AssignAssessmentForm";
 import { Badge } from "../ui/badge";
-
-type EditFromValues = z.infer<typeof assessmentSchema>;
-type AssignFormValues = z.infer<typeof assignAssessmentSchema>;
+import {
+  Assessment,
+  AssessmentFormValues,
+  AssignAssessmentFormValues,
+} from "@/services/assessments/types";
+import { DEFAULT_DATE_FORMAT } from "@/lib/constants";
+import { useAssignAssessment } from "@/services/assessments/mutations";
 
 const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
-  const { title, description, date, candidates } = assessment;
+  const { _id, title, description, createdAt, assignments } = assessment;
 
   // Related to assigned candidate avatars
   const maxAvatars = 3;
-  const totalNumber = candidates.length;
+  const totalNumber = assignments.length;
   const remaining = totalNumber - maxAvatars;
 
   // States related to edit dialog
@@ -63,15 +65,28 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
   const [isAssigning, setIsAssigning] = useState(false);
   const [assignCancelDialog, setAssignCancelDialog] = useState(false);
 
-  const editForm = useForm<EditFromValues>({
+  // Mutations
+  const assignMutation = useAssignAssessment();
+
+  const editForm = useForm<AssessmentFormValues>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
       title: assessment.title,
       description: assessment.description,
+      technologies: assessment.technologies,
+      assessmentType: assessment.assessmentType,
       format: assessment.format,
-      type: assessment.type,
       assessmentFile: undefined,
       link: assessment.link,
+    },
+  });
+
+  const assignForm = useForm<AssignAssessmentFormValues>({
+    resolver: zodResolver(assignAssessmentSchema),
+    defaultValues: {
+      candidates: [],
+      deadlineDate: undefined,
+      deadlineTime: undefined,
     },
   });
 
@@ -87,32 +102,33 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
     editForm.reset();
   }
 
-  const onEdit = async (values: EditFromValues) => {
-    console.log("🚀 ~ AssessmentCard.tsx:80 ~ values:", values);
-  };
-
-  const assignForm = useForm<AssignFormValues>({
-    resolver: zodResolver(assignAssessmentSchema),
-    defaultValues: {
-      assessmentId: assessment.id,
-      candidates: [],
-    },
-  });
-
   const onAssignDialogOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
-      if (assignForm.formState.isDirty) {
-        setAssignCancelDialog(true);
-        return;
-      }
+      setAssignCancelDialog(true);
+      return;
     }
 
     setIsAssigning(isOpen);
     assignForm.reset();
   };
 
-  const onAssign = async (values: AssignFormValues) => {
-    console.log("🚀 ~ AssessmentCard.tsx:116 ~ values:", values);
+  const onEdit = async (values: AssessmentFormValues) => {
+    console.log("🚀 ~ AssessmentCard.tsx:80 ~ values:", values);
+  };
+
+  const onAssign = async (values: AssignAssessmentFormValues) => {
+    await assignMutation.mutateAsync(
+      {
+        id: _id,
+        data: values,
+      },
+      {
+        onSuccess: () => {
+          assignForm.reset();
+          setIsAssigning(false);
+        },
+      },
+    );
   };
 
   return (
@@ -123,7 +139,7 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
             <span>
               <CardTitle className="text-primary text-lg">{title}</CardTitle>
               <CardDescription className="text-foreground">
-                Created on {format(date, "do MMMM yyyy")}
+                Created on {format(createdAt, DEFAULT_DATE_FORMAT)}
               </CardDescription>
             </span>
 
@@ -174,29 +190,40 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
         </CardHeader>
 
         <CardContent className="space-y-1">
-          <Badge className="capitalize">{assessment.format}</Badge>
+          {assessment.technologies.map((tech) => (
+            <Badge key={assessment._id + tech} className="capitalize">
+              {tech}
+            </Badge>
+          ))}
 
           <p className="text-muted-foreground line-clamp-3 text-sm md:h-16">
             {description}
           </p>
 
-          {candidates.length > 0 && (
-            <div className="mt-2 flex items-center gap-2 text-sm">
-              <p>Assigned to</p>
-              <div className="flex items-center gap-0.5">
-                <div className="flex items-center -space-x-2.5">
-                  {candidates.slice(0, maxAvatars).map((candidate, index) => (
-                    <AccountAvatar
-                      key={candidate.id || index}
-                      className="size-5"
-                      avatarUrl=""
-                    />
-                  ))}
-                </div>
-                {remaining > 0 && <p>+{remaining} more</p>}
+          <div className="text-muted-foreground mt-2 flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-0.5">
+              <div className="flex items-center -space-x-2.5">
+                {assignments.slice(0, maxAvatars).map((assigment, index) => (
+                  <AccountAvatar
+                    key={assigment.candidate._id || index}
+                    className="size-5"
+                    avatarUrl=""
+                  />
+                ))}
               </div>
+              {remaining > 0 && <p>+{remaining} more</p>}
             </div>
-          )}
+            <p>
+              {assignments.length > 0
+                ? `Assigned to ${assignments
+                    .slice(0, maxAvatars)
+                    .map((assignment) => assignment.candidate.name)
+                    .join(
+                      ", ",
+                    )} ${assignments.length > 1 ? `and ${remaining} more` : ""}`
+                : "Not assigned yet."}
+            </p>
+          </div>
         </CardContent>
 
         <CardFooter className="justify-end gap-2 pt-2">
@@ -212,13 +239,12 @@ You must select at least one candidate before proceeding."
               </Button>
             }
             showScrollTopButton={true}
-            className="max-w-[700px]!"
           >
             <AssignAssessmentForm form={assignForm} onSubmit={onAssign} />
           </DynamicDialog>
 
           <Button variant="outline" asChild>
-            <Link to={`/assessments/${assessment.id}`}>
+            <Link to={`/assessments/${assessment._id}`}>
               <Info /> Details
             </Link>
           </Button>
@@ -230,7 +256,7 @@ You must select at least one candidate before proceeding."
         description="Create and upload assessment materials and assign them to selected candidates. You can include optional notes and set a deadline."
         open={isEditing}
         onOpenChange={onEditDialogOpenChange}
-        trigger={<></>}
+        trigger={<button className="sr-only">Edit</button>}
       >
         <AssessmentForm form={editForm} onSubmit={onEdit} />
       </DynamicDialog>

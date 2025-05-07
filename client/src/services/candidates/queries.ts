@@ -21,6 +21,6 @@ export const useGetCandidateById = (id: string) => {
 export const useGetEligibleCandidates = (status?: string) => {
   return useQuery({
     queryFn: () => getEligibleCandidates(status),
-    queryKey: candidateKeys.eligibleWithStatus(status),
+    queryKey: candidateKeys.eligibleWithStatus(status ?? ""),
   });
 };

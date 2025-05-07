@@ -12,27 +12,37 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartData = [{ month: "january", rejected: 1260, accepted: 570 }];
-
 const chartConfig = {
   accepted: {
     label: "Accepted",
-    color: "var(--chart-1)",
+    color: "var(--chart-2)",
   },
   rejected: {
     label: "Rejected",
-    color: "var(--chart-2)",
+    color: "var(--chart-1)",
+  },
+  pending: {
+    label: "In-Process",
+    color: "var(--chart-4)",
   },
 } satisfies ChartConfig;
 
-const RadialchartStacked = () => {
-  const totalVisitors = chartData[0].rejected + chartData[0].accepted;
+const RadialchartStacked = ({
+  rejected,
+  accepted,
+  pending,
+}: {
+  rejected: number;
+  accepted: number;
+  pending: number;
+}) => {
+  const chartData = [{ month: "january", rejected, accepted, pending }];
+
+  const totalVisitors =
+    chartData[0].rejected + chartData[0].accepted + chartData[0].pending;
 
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="mx-auto aspect-square w-full max-w-[300px]"
-    >
+    <ChartContainer config={chartConfig} className="mx-auto">
       <RadialBarChart data={chartData} innerRadius={80} outerRadius={130}>
         <ChartTooltip
           cursor={false}
@@ -56,7 +66,7 @@ const RadialchartStacked = () => {
                       y={(viewBox.cy || 0) + 20}
                       className="fill-muted-foreground"
                     >
-                      Candidates
+                      Total Candidates
                     </tspan>
                   </text>
                 );
@@ -69,6 +79,13 @@ const RadialchartStacked = () => {
           stackId="a"
           cornerRadius={5}
           fill="var(--color-accepted)"
+          className="stroke-transparent stroke-2"
+        />
+        <RadialBar
+          dataKey="pending"
+          fill="var(--color-pending)"
+          stackId="a"
+          cornerRadius={5}
           className="stroke-transparent stroke-2"
         />
         <RadialBar
@@ -93,6 +110,11 @@ const RadialchartStacked = () => {
               value: "Rejected",
               type: "circle",
               color: "var(--color-rejected)",
+            },
+            {
+              value: "In-Process",
+              type: "circle",
+              color: "var(--color-pending)",
             },
           ]}
         />

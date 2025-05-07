@@ -1,15 +1,52 @@
-import Candidates from "@/assets/data/Candidates";
+import LetterForm from "@/components/forms/Letter/LetterForm";
 import BackButton from "@/components/shared/BackButton";
-import RichTextEditor from "@/components/shared/RichTextEditor";
-import { Button } from "@/components/ui/button";
-import { Combobox } from "@/components/ui/combo-box";
-import { Label } from "@/components/ui/label";
-import { MultiSelect } from "@/components/ui/multi-select";
-import { Technologies } from "@/lib/constants";
-import { useState } from "react";
+import { letterFormSchema } from "@/lib/schemas/letterSchemas";
+import { LetterFormValues } from "@/services/letter/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
+import { Editor } from "@tiptap/react";
+import { useSearchParams } from "react-router-dom";
+import { useSendLetter } from "@/services/letter/mutations";
 
 const SendLetter = () => {
-  const [content, setContent] = useState("");
+  const [searchParams] = useSearchParams();
+  const draft = searchParams.get("draft");
+  const candidate = searchParams.get("candidate");
+
+  const editorRef = useRef<Editor | null>(null);
+  const contentBeforeSubmittingRef = useRef("");
+
+  const form = useForm<LetterFormValues>({
+    defaultValues: {
+      candidateId: candidate ?? "",
+      content: "",
+      draftId: draft ?? "",
+    },
+    resolver: zodResolver(letterFormSchema),
+  });
+
+  // Mutations
+  const sendLetterMutation = useSendLetter();
+
+  const onSend = async (values: LetterFormValues) => {
+    await sendLetterMutation.mutateAsync(values, {
+      onSuccess: () => {
+        form.reset();
+        editorRef.current?.commands.setContent("");
+        contentBeforeSubmittingRef.current = "";
+      },
+      onError: () =>
+        form.setValue("content", contentBeforeSubmittingRef.current),
+    });
+  };
+
+  useEffect(() => {
+    if (draft) {
+      form.setValue("draftId", draft);
+    }
+  }, [draft, form]);
+
   return (
     <div className="small-container space-y-4">
       <BackButton />
@@ -18,48 +55,16 @@ const SendLetter = () => {
         <h1 className="page-heading">Send Letter</h1>
         <p className="page-description">
           Select a letter template, customize its content if needed, and send it
-          to one or more candidates.
+          to a candidate.
         </p>
       </div>
 
-      <Label>Candidates</Label>
-      {/* <MultiSelect
-        className="h-12 w-full"
-        options={Technologies}
-        // onValueChange={field.onChange}
-        // defaultValue={field.value}
-        placeholder="Select technologies"
-        variant="inverted"
-        maxCount={8}
-        // error={!!form.formState.errors.technology}
-      /> */}
-
-      <Label>Draft</Label>
-      {/* <Combobox
-        placeholder="Select Candidate"
-        options={[
-          {
-            label: "Peter Parker - peter@gmail.com",
-            value: "candidate-1",
-          },
-          {
-            label: "Marry Jane - marry@gmail.com",
-            value: "candidate-2",
-          },
-        ]}
-        // value={field.value}
-        // setValue={field.onChange}
-        // error={!!form.formState.errors.candidate}
-      /> */}
-
-      <Label>Content</Label>
-      <RichTextEditor
-        content={content}
-        onChange={setContent}
-        className="no-scrollbar max-h-[60vh] overflow-y-auto"
+      <LetterForm
+        form={form}
+        onSubmit={onSend}
+        onEditorReady={(editor) => (editorRef.current = editor)}
+        setContentBeforeSubmitting={contentBeforeSubmittingRef}
       />
-
-      <Button className="w-full">Send</Button>
     </div>
   );
 };

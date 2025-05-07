@@ -6,46 +6,43 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartData = [
-  { step: "short-listed", candidates: 275, fill: "var(--chart-1)" },
-  { step: "first-interview", candidates: 200, fill: "var(--chart-2)" },
-  { step: "second-interview", candidates: 187, fill: "var(--chart-3)" },
-  { step: "third-interview", candidates: 173, fill: "var(--chart-4)" },
-  { step: "assessment", candidates: 90, fill: "var(--chart-5)" },
-  { step: "offer-letter", candidates: 100, fill: "var(--chart-1)" },
-];
+const BarchartHorizontal = ({
+  averageDurations,
+}: {
+  averageDurations: Record<string, number>;
+}) => {
+  const colorPalette = [
+    "var(--chart-1)",
+    "var(--chart-2)",
+    "var(--chart-3)",
+    "var(--chart-4)",
+    "var(--chart-5)",
+  ];
 
-const chartConfig = {
-  candidates: {
-    label: "Candidates",
-  },
-  "short-listed": {
-    label: "Short Listed",
-    color: "var(--chart-1)",
-  },
-  "first-interview": {
-    label: "First Interview",
-    color: "var(--chart-2)",
-  },
-  "second-interview": {
-    label: "Second Interview",
-    color: "var(--chart-3)",
-  },
-  "third-interview": {
-    label: "Third Interview",
-    color: "var(--chart-4)",
-  },
-  assessment: {
-    label: "Assessment",
-    color: "var(--chart-5)",
-  },
-  "offer-letter": {
-    label: "Offer Letter",
-    color: "var(--chart-1)",
-  },
-} satisfies ChartConfig;
+  const chartData = Object.entries(averageDurations).map(
+    ([step, duration], index) => ({
+      step,
+      duration,
+      fill: colorPalette[index % colorPalette.length],
+    }),
+  );
 
-const BarchartHorizontal = () => {
+  const chartConfig: ChartConfig = {
+    duration: {
+      label: "Avg duration",
+    },
+  };
+
+  chartData.forEach((item) => {
+    chartConfig[item.step] = {
+      label: item.step
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" "),
+      color: item.fill,
+    };
+  });
+
   return (
     <ChartContainer config={chartConfig}>
       <BarChart
@@ -64,19 +61,20 @@ const BarchartHorizontal = () => {
           tickMargin={10}
           axisLine={false}
           tickFormatter={(value) =>
-            chartConfig[value as keyof typeof chartConfig]?.label
+            chartConfig[value as keyof typeof chartConfig]?.label || value
           }
         />
-        <XAxis dataKey="candidates" type="number" hide />
+        <XAxis dataKey="duration" type="number" hide />
         <ChartTooltip
           cursor={false}
           content={<ChartTooltipContent hideLabel />}
         />
-        <Bar dataKey="candidates" layout="vertical" radius={5}>
+        <Bar dataKey="duration" layout="vertical" radius={5}>
           <LabelList
-            dataKey="candidates"
+            dataKey="duration"
             position="right"
             className="font-semibold"
+            formatter={(value: number) => `${value.toFixed(1)} days`}
           />
         </Bar>
       </BarChart>

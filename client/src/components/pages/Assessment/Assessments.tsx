@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { assessmentSchema } from "@/lib/schemas/assessmentSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Asssessments as AssessmentsData } from "@/assets/data/Assessments";
 import { Plus } from "lucide-react";
 import DynamicDialog from "@/components/dialogs/DynamicDialog";
 import { Button } from "@/components/ui/button";
@@ -15,12 +14,19 @@ import AssessmentForm from "@/components/forms/Assessment/AssessmentForm";
 import DiscardChangesAlert from "@/components/dialogs/DiscardChangesAlert";
 import AssessmentCard from "@/components/shared/AssessmentCard";
 import SearchInput from "@/components/shared/SearchInput";
+import { useGetAllAssessments } from "@/services/assessments/queries";
+import CardLayoutSkeleton from "@/components/skeletons/CardLayoutSkeleton";
+import NotFound from "../NotFound";
+import NoData from "@/components/shared/NoData";
+import { useCreateAssessment } from "@/services/assessments/mutations";
 
 const Assessments = () => {
-  const [searchParams] = useSearchParams();
   const isSidebarCollapsed = useSelector(
     (state: RootState) => state.sidebar.isCollapsed,
   );
+
+  const [searchParams] = useSearchParams();
+  const createParam = useMemo(() => searchParams.get("create"), [searchParams]);
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -28,20 +34,33 @@ const Assessments = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [createCancelDialog, setCreateCancelDialog] = useState(false);
 
+  // Queries
+  const { data: assessmentsData, isPending: assessmentsLoading } =
+    useGetAllAssessments();
+
+  // Mutations
+  const createMutation = useCreateAssessment();
+
   const form = useForm<z.infer<typeof assessmentSchema>>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
       title: "",
       description: "",
+      technologies: [],
+      assessmentType: "",
       format: undefined,
-      type: "",
-      assessmentFile: undefined,
       link: "",
+      assessmentFile: undefined,
     },
   });
 
   const onCreate = async (values: z.infer<typeof assessmentSchema>) => {
-    console.log("🚀 ~ Assessments.tsx:58 ~ values:", values);
+    await createMutation.mutateAsync(values, {
+      onSuccess: () => {
+        form.reset();
+        setIsCreating(false);
+      },
+    });
   };
 
   const onOpenChange = (isOpen: boolean) => {
@@ -56,13 +75,17 @@ const Assessments = () => {
     form.reset();
   };
 
-  const createParam = useMemo(() => searchParams.get("create"), [searchParams]);
-
   useEffect(() => {
     if (createParam === "true") {
       setIsCreating(true);
     }
   }, [createParam]);
+
+  if (assessmentsLoading) return <CardLayoutSkeleton />;
+
+  if (!assessmentsData) return <NotFound />;
+
+  const { data: assessments } = assessmentsData;
 
   return (
     <>
@@ -103,9 +126,13 @@ const Assessments = () => {
             : "md:grid-cols-2 xl:grid-cols-3",
         )}
       >
-        {AssessmentsData.map((assessment) => (
-          <AssessmentCard assessment={assessment} key={assessment.id} />
-        ))}
+        {assessments.length < 1 ? (
+          <NoData item="assessments" className="mt-4 md:col-span-4" />
+        ) : (
+          assessments.map((assessment) => (
+            <AssessmentCard assessment={assessment} key={assessment._id} />
+          ))
+        )}
       </div>
 
       <DiscardChangesAlert

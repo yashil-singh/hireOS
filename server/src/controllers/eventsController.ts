@@ -46,71 +46,26 @@ export const getRecentEvents = async (req: Request, res: Response) => {
   successResponse({ res, data: events });
 };
 
-// export const getCandidateProgressStatus = async (id: string) => {
-//   const [events, steps] = await Promise.all([
-//     Event.find({ candidate: id }),
-//     HiringProcess.find().sort({ step: 1 }),
-//   ]);
-
-//   const eventMap = new Map(
-//     events.map((event) => [event.step.toString(), event])
-//   );
-
-//   let currentStep = null;
-//   let currentEvent = null;
-//   let currEventHasActivities = true;
-//   let isCurrentEventCompleted = false;
-//   let nextStep = null;
-
-//   for (let i = 0; i < steps.length; i++) {
-//     const step = steps[i];
-//     const stepId = step._id.toString();
-//     const event = eventMap.get(stepId);
-
-//     if (event) {
-//       currentStep = step;
-//       currentEvent = event;
-//       isCurrentEventCompleted = event.status === "completed";
-//       currEventHasActivities =
-//         Array.isArray(event.activities) && event.activities.length > 0;
-
-//       if (!isCurrentEventCompleted) {
-//         nextStep = steps[i + 1] || null;
-//         break;
-//       }
-//     } else {
-//       nextStep = step;
-//       break;
-//     }
-//   }
-
-//   return {
-//     currentStep,
-//     nextStep,
-//     currentEvent,
-//     currEventHasActivities,
-//     isCurrentEventCompleted,
-//   };
-// };
-
 export const getCandidateProgressStatus = async (id: string) => {
   const events = await Event.find({ candidate: id }).populate("step");
 
   const currentEvent = events.pop();
 
-  if (events.length < 1 || !currentEvent)
-    return throwError("No events found for this candidate.");
+  if (!currentEvent) return throwError("No events found for this candidate.");
 
   const currEventHasActivities = currentEvent.activities.length > 0;
   const isCurrentEventCompleted = currentEvent.status === "completed";
-  const currentStep = currentEvent.step;
+  const currentStep = currentEvent?.step;
 
-  const nextStep = await HiringProcess.findOne({ step: currentStep.step + 1 });
-
-  const nextRequiredStep = await HiringProcess.findOne({
-    step: { $gt: currentStep.step },
-    optional: false,
-  }).sort({ step: 1 });
+  let nextStep = null;
+  let nextRequiredStep = null;
+  if (currentStep) {
+    nextStep = await HiringProcess.findOne({ step: currentStep.step + 1 });
+    nextRequiredStep = await HiringProcess.findOne({
+      step: { $gt: currentStep.step },
+      optional: false,
+    }).sort({ step: 1 });
+  }
 
   return {
     currentStep,

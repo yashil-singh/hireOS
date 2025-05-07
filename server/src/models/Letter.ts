@@ -1,8 +1,9 @@
-import mongoose, { Document, Schema, Types } from "mongoose";
+import mongoose, { Document, ObjectId, Schema, Types } from "mongoose";
 import { ICandidate } from "./Candidate";
 import { IDraft } from "./Draft";
 
 export interface ILetter extends Document {
+  _id: ObjectId;
   candidate: ICandidate;
   draft: IDraft;
   content: string;

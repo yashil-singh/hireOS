@@ -20,7 +20,7 @@ export const getCandidateById = async (
 };
 
 export const getEligibleCandidates = async (
-  status?: string,
+  status?: string | null,
 ): Promise<MultiCandidateResponse> => {
   const params = new URLSearchParams();
 
@@ -50,5 +50,26 @@ export const changeCandidateStatus = async (
   stepId: string,
 ): Promise<ChangeCandidateStatusResponse> => {
   const response = await PATCH(`/candidates/${candidateId}/status`, { stepId });
+  return response;
+};
+
+export const hireCandidate = async (
+  id: string,
+): Promise<SingleCandidateResponse> => {
+  const response = await POST(`/candidates/${id}/hire`);
+  return response;
+};
+
+export const rejectCandidate = async (
+  id: string,
+): Promise<SingleCandidateResponse> => {
+  const response = await POST(`/candidates/${id}/reject`);
+  return response;
+};
+
+export const blacklistCandidate = async (
+  id: string,
+): Promise<SingleCandidateResponse> => {
+  const response = await POST(`/candidates/${id}/blacklist`);
   return response;
 };

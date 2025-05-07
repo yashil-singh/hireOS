@@ -23,7 +23,7 @@ import { ArrowUp } from "lucide-react";
 type DynamicDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
   title: string;
   description: string;
   showDescription?: boolean;
@@ -119,7 +119,7 @@ const DynamicDialog = ({
     </Drawer>
   ) : (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 
       <DialogContent
         className={cn("w-full max-w-[600px]! px-0 py-0", className)}

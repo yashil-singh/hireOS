@@ -1,11 +1,11 @@
-import { Letter } from "@/lib/types";
+import { Letter } from "@/services/letter/types";
 import Drafts from "./Drafts";
 
 const Letters: Letter[] = [
   {
     id: "letter-1",
     candidate: {
-      id: "candidate-1",
+      _id: "candidate-1",
       name: "Alice Johnson",
       email: "alice.johnson@example.com",
     },
@@ -17,7 +17,7 @@ const Letters: Letter[] = [
   {
     id: "letter-2",
     candidate: {
-      id: "candidate-2",
+      _id: "candidate-2",
       name: "Bob Smith",
       email: "bob.smith@example.com",
     },
@@ -29,7 +29,7 @@ const Letters: Letter[] = [
   {
     id: "letter-3",
     candidate: {
-      id: "candidate-3",
+      _id: "candidate-3",
       name: "Charlie Davis",
       email: "charlie.davis@example.com",
     },
@@ -41,7 +41,7 @@ const Letters: Letter[] = [
   {
     id: "letter-4",
     candidate: {
-      id: "candidate-4",
+      _id: "candidate-4",
       name: "Diana Prince",
       email: "diana.prince@example.com",
     },
@@ -53,7 +53,7 @@ const Letters: Letter[] = [
   {
     id: "letter-5",
     candidate: {
-      id: "candidate-5",
+      _id: "candidate-5",
       name: "Ethan Hunt",
       email: "ethan.hunt@example.com",
     },

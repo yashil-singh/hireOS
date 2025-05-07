@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { useEditor, EditorContent, BubbleMenu } from "@tiptap/react";
+import { useEditor, EditorContent, BubbleMenu, Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import RichTextEditorToolbar from "./RichTextEditorToolbar";
 import TextAlign from "@tiptap/extension-text-align";
@@ -8,15 +8,19 @@ import CharacterCounter from "@tiptap/extension-character-count";
 import { useEffect } from "react";
 
 type RichTextEditorProps = {
+  isError?: boolean;
   className?: string;
   contentClassName?: string;
   content: string;
   onChange: (content: string) => void;
   editable?: boolean;
   showToolBar?: boolean;
+  onEditorReady?: (editor: Editor) => void;
 };
 
 const RichTextEditor = ({
+  onEditorReady,
+  isError,
   className,
   contentClassName,
   content,
@@ -61,8 +65,17 @@ const RichTextEditor = ({
     }
   }, [editable, editor]);
 
+  useEffect(() => {
+    if (editor && onEditorReady) {
+      onEditorReady(editor);
+    }
+  }, [editor, onEditorReady]);
+
   return (
-    <div className={cn("bg-card rounded-xl border", className)}>
+    <div
+      className={cn("bg-card rounded-xl border", className)}
+      aria-invalid={isError}
+    >
       {showToolBar && <RichTextEditorToolbar editor={editor} />}
 
       <EditorContent editor={editor} />

@@ -21,8 +21,6 @@ function App() {
   const { data, isError, isFetched } = useQuery({
     queryKey: ["authenticate"],
     queryFn: authenticate,
-    retry: false,
-    refetchOnWindowFocus: false,
   });
 
   const { data: hiringProcessSteps, isLoading: hiringProcessStepsLoading } =

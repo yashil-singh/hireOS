@@ -12,47 +12,7 @@ import {
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
-  //   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-const chartData = [
-  {
-    step: "Short Listed",
-    moved: 200,
-    rejected: 50,
-    pending: 25,
-  },
-  {
-    step: "First Interview",
-    moved: 150,
-    rejected: 30,
-    pending: 20,
-  },
-  {
-    step: "Second Interview",
-    moved: 130,
-    rejected: 40,
-    pending: 17,
-  },
-  {
-    step: "Third Interview",
-    moved: 120,
-    rejected: 30,
-    pending: 23,
-  },
-  {
-    step: "Assessment",
-    moved: 70,
-    rejected: 10,
-    pending: 10,
-  },
-  {
-    step: "Offer Letter",
-    moved: 90,
-    rejected: 5,
-    pending: 5,
-  },
-];
 
 const chartConfig = {
   moved: {
@@ -69,12 +29,22 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+type BarchartHorizontalStackedProps = {
+  stageCounts: {
+    stepTitle: string;
+    counts: {
+      pending: number;
+      completed: number;
+      cancelled: number;
+    };
+  }[];
+};
+
 const ChartTooltipContent = ({
   active,
   payload,
   label,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-}: TooltipProps<any, any>) => {
+}: TooltipProps<number, string>) => {
   if (!active || !payload?.length) return null;
 
   const total = payload.reduce((sum, entry) => sum + (entry.value ?? 0), 0);
@@ -110,14 +80,23 @@ const ChartTooltipContent = ({
   );
 };
 
-const BarchartHorizontalStacked = () => {
+const BarchartHorizontalStacked = ({
+  stageCounts,
+}: BarchartHorizontalStackedProps) => {
+  const chartData = stageCounts.map((item) => ({
+    step: item.stepTitle,
+    moved: item.counts.completed || 0,
+    rejected: item.counts.cancelled || 0,
+    pending: item.counts.pending || 0,
+  }));
+
   return (
     <ChartContainer config={chartConfig}>
       <BarChart
         data={chartData}
         layout="vertical"
         margin={{
-          left: 20,
+          left: 55,
         }}
       >
         <CartesianGrid horizontal={false} />
@@ -128,6 +107,7 @@ const BarchartHorizontalStacked = () => {
           tickLine={false}
           tickMargin={10}
           axisLine={false}
+          className="capitalize"
         />
         <ChartTooltip content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />

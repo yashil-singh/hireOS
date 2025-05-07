@@ -5,21 +5,17 @@ import {
   ChartTooltipContent,
 } from "../ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-
-const chartData = [
-  { month: "January", applications: 186 },
-  { month: "February", applications: 305 },
-  { month: "March", applications: 237 },
-  { month: "April", applications: 73 },
-  { month: "May", applications: 209 },
-  { month: "June", applications: 214 },
-  { month: "July", applications: 100 },
-  { month: "August", applications: 180 },
-  { month: "September", applications: 156 },
-  { month: "October", applications: 284 },
-  { month: "November", applications: 300 },
-  { month: "December", applications: 320 },
-];
+import {
+  eachDayOfInterval,
+  format,
+  startOfWeek,
+  endOfWeek,
+  eachMonthOfInterval,
+  startOfYear,
+  endOfYear,
+  eachYearOfInterval,
+} from "date-fns";
+import { ApplicationData } from "@/services/dashboard/types";
 
 const chartConfig = {
   applications: {
@@ -28,17 +24,88 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const Barchart = () => {
+const Barchart = ({
+  weekly,
+  monthly,
+  yearly,
+  type,
+}: {
+  weekly: ApplicationData[];
+  monthly: ApplicationData[];
+  yearly: ApplicationData[];
+  type: "weekly" | "monthly" | "yearly";
+}) => {
+  function formatWeeklyData(data: ApplicationData[]) {
+    const now = new Date();
+    const weekDays = eachDayOfInterval({
+      start: startOfWeek(now),
+      end: endOfWeek(now),
+    });
+
+    return weekDays.map((day) => {
+      const dateStr = format(day, "yyyy-MM-dd");
+      const entry = data.find((d) => {
+        return d._id === dateStr;
+      });
+      return {
+        label: format(day, "EEE"), // Mon, Tue
+        applications: entry ? entry.count : 0,
+      };
+    });
+  }
+
+  function formatMonthlyData(data: ApplicationData[]) {
+    const now = new Date();
+    const months = eachMonthOfInterval({
+      start: startOfYear(now),
+      end: endOfYear(now),
+    });
+
+    return months.map((month) => {
+      const dateStr = format(month, "yyyy-MM");
+      const entry = data.find((d) => d._id === dateStr);
+      return {
+        label: format(month, "MMMM"), // January, etc.
+        applications: entry ? entry.count : 0,
+      };
+    });
+  }
+
+  function formatYearlyData(data: ApplicationData[]) {
+    const years = eachYearOfInterval({
+      start: new Date(parseInt(data[0]?._id) || new Date().getFullYear(), 0, 1),
+      end: new Date(),
+    });
+
+    return years.map((year) => {
+      const dateStr = format(year, "yyyy");
+      const entry = data.find((d) => d._id === dateStr);
+      return {
+        label: dateStr,
+        applications: entry ? entry.count : 0,
+      };
+    });
+  }
+
+  const chartData =
+    type === "weekly"
+      ? formatWeeklyData(weekly)
+      : type === "monthly"
+        ? formatMonthlyData(monthly)
+        : formatYearlyData(yearly);
+
   return (
     <ChartContainer config={chartConfig}>
       <BarChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="month"
+          dataKey="label"
           tickLine={false}
           tickMargin={0}
           axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
+          tickFormatter={(value) =>
+            type === "monthly" ? value.slice(0, 3) : value
+          }
         />
         <ChartTooltip
           cursor={false}
@@ -48,6 +115,7 @@ const Barchart = () => {
           dataKey="applications"
           fill="var(--color-applications)"
           radius={8}
+          maxBarSize={50}
         />
       </BarChart>
     </ChartContainer>

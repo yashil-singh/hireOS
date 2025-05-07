@@ -23,7 +23,7 @@ const DataCard = ({
     <Link to={link ?? "/"}>
       <Card className="gap-4">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 max-sm:text-base">
             <Icon className="text-primary size-5" /> {label}
           </CardTitle>
           <CardDescription className="sr-only"></CardDescription>

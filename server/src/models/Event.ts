@@ -2,8 +2,7 @@ import { IHiringProcess } from "@/models/HiringProcess";
 import mongoose, { Document, Model, Schema, Types } from "mongoose";
 import { ICandidate } from "./Candidate";
 
-interface IActivity {
-  _id: string;
+export interface IActivity extends Document {
   title: string;
   description?: string;
   createdAt: Date;
@@ -47,7 +46,7 @@ const eventSchema = new Schema<IEvent>(
     step: {
       type: Schema.Types.ObjectId,
       ref: "HiringProcess",
-      required: true,
+      required: false,
     },
   },
   { timestamps: true }

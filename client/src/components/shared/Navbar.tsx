@@ -83,8 +83,8 @@ const Navbar = ({
                         className={({ isActive }) =>
                           cn("nav-link ml-6 p-2", isActive && "active")
                         }
-                        key={`${link.title}-${child.title}`}
                         end
+                        key={`${link.title}-${child.title}`}
                       >
                         <child.Icon className="size-4" />
                         <span className="line-clamp-1">{child.title}</span>

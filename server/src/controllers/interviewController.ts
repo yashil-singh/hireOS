@@ -6,11 +6,13 @@ import { getCandidateProgressStatus } from "./eventsController";
 import { format } from "date-fns";
 import HiringProcess from "@/models/HiringProcess";
 import Candidate from "@/models/Candidate";
+import { DEFAULT_TIME_FORMAT } from "@/lib/constants";
 
 export const getAllInterviews = async (req: Request, res: Response) => {
   const interviews = await Interview.find()
     .populate("interviewers")
-    .populate("candidate");
+    .populate("candidate")
+    .populate("event");
   successResponse({ res, data: interviews });
 };
 
@@ -20,6 +22,7 @@ export const getInterviewById = async (req: Request, res: Response) => {
 
   const event = await Interview.findById(id)
     .populate("interviewers")
+    .populate("event")
     .populate("candidate");
   if (!event) return throwError("Event not found.");
 
@@ -36,9 +39,12 @@ export const getInterviewsByCandidateId = async (
   const candidate = await Candidate.findById(id);
   if (!candidate) return throwError("Candidate not found.", 404);
 
-  const interviews = await Interview.find({ candidate: candidate._id }).sort({
-    createdAt: -1,
-  });
+  const interviews = await Interview.find({ candidate: candidate._id })
+    .populate("candidate")
+    .populate("event")
+    .sort({
+      createdAt: -1,
+    });
 
   successResponse({ res, data: interviews });
 };
@@ -137,7 +143,13 @@ export const scheduleInterview = async (req: Request, res: Response) => {
 
   successResponse({
     res,
-    message: `Interview scheduled at ${formatedDate}, ${formatedStartDate}-${formatedEndDate}`,
+    message: `Interview scheduled at ${format(
+      new Date(start),
+      "do MMMM"
+    )}, ${format(new Date(start), DEFAULT_TIME_FORMAT)}-${format(
+      new Date(start),
+      DEFAULT_TIME_FORMAT
+    )}`,
     data: interview,
   });
 };

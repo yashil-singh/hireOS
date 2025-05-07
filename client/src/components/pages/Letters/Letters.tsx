@@ -1,19 +1,30 @@
 import { LetterColumns } from "@/components/tables/Columns/LetterColumns";
 import { DataTable } from "@/components/tables/DataTable";
-import LetterData from "@/assets/data/Letters";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { FilePen, Send } from "lucide-react";
+import { useGetAllLetters } from "@/services/letter/queries";
+import NotFound from "../NotFound";
 
 const Letters = () => {
+  // Queries
+  const {
+    data: lettersData,
+    isPending: lettersLoading,
+    error: lettersError,
+  } = useGetAllLetters();
+
+  if (lettersError) return <NotFound />;
+
   return (
     <>
       <h1 className="page-heading">Letters</h1>
       <p className="page-description">Generate and manage letters.</p>
 
       <DataTable
+        isLoading={lettersLoading}
         columns={LetterColumns}
-        data={LetterData}
+        data={lettersData?.data}
         searchableColumns={[
           "id",
           "candidate.id",

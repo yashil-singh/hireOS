@@ -9,8 +9,11 @@ import AccountAvatar from "./AccountAvatar";
 import { Badge } from "../ui/badge";
 import DynamicDialog from "../dialogs/DynamicDialog";
 import { Button } from "../ui/button";
-import { Assessment, Candidate } from "@/lib/types";
 import DiscardChangesAlert from "../dialogs/DiscardChangesAlert";
+import { Candidate } from "@/services/candidates/type";
+import { Assessment } from "@/services/assessments/types";
+import { Link } from "react-router-dom";
+import { useEvaluateAssessment } from "@/services/assessments/mutations";
 
 type EvaluateCardProps = {
   assessment: Assessment;
@@ -21,14 +24,18 @@ const EvaluateCard = ({ assessment, candidate }: EvaluateCardProps) => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [cancelDialog, setCancelDialog] = useState(false);
 
+  // Mutations
+  const evaluateMutation = useEvaluateAssessment(assessment._id);
+
   const form = useForm<EvaluateFormValues>({
     resolver: zodResolver(evaluateAssessmentSchema),
     defaultValues: {
+      interviewerId: undefined,
       rating: 0,
       remarks: "",
-      format: assessment.format,
+      submissionFormat: assessment.format,
       submittedFile: undefined,
-      link: assessment.link,
+      submissionLink: undefined,
     },
   });
 
@@ -45,25 +52,39 @@ const EvaluateCard = ({ assessment, candidate }: EvaluateCardProps) => {
   };
 
   const onEvaluate = async (values: EvaluateFormValues) => {
-    console.log("🚀 ~ EvaluateCard.tsx:47 ~ values:", values);
-    console.log("🚀 ~ EvaluateCard.tsx:48 ~ candidate:", candidate);
+    await evaluateMutation.mutateAsync(
+      {
+        assessmentId: assessment._id,
+        candidateId: candidate._id,
+        data: values,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+          setIsEvaluating(false);
+        },
+      },
+    );
   };
 
   return (
     <>
       <div className="bg-card space-y-4 rounded-xl border p-4">
-        <div className="flex items-center gap-4">
+        <Link
+          to={`/candidates/${candidate._id}`}
+          className="flex items-center gap-4"
+        >
           <AccountAvatar avatarUrl="" />
           <div className="flex flex-col">
-            <b>
+            <b className="capitalize">
               {candidate.name} • {candidate.level}
             </b>
             <span>{candidate.email}</span>
           </div>
-        </div>
+        </Link>
         <div className="flex gap-2">
           {candidate.technology.map((tech, index) => (
-            <Badge key={`${candidate.id}-tech-${index}`}>{tech}</Badge>
+            <Badge key={`${candidate._id}-tech-${index}`}>{tech}</Badge>
           ))}
         </div>
 

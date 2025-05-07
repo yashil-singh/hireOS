@@ -27,6 +27,7 @@ import { Loader2, Plus } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import DynamicDialog from "../dialogs/DynamicDialog";
 import SearchInput from "../shared/SearchInput";
+import { useSearchParams } from "react-router-dom";
 
 interface DataTableProps<TData, TValue> {
   topChildren?: React.ReactNode;
@@ -53,6 +54,8 @@ export function DataTable<TData, TValue>({
   initialSearchQuery,
   isLoading = false,
 }: DataTableProps<TData, TValue>) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
@@ -86,7 +89,7 @@ export function DataTable<TData, TValue>({
       }
 
       return searchableColumns.some((col) => {
-        const keys = col.split("."); // handle nested keys
+        const keys = col.split(".");
         let rowValue: unknown = row.original;
 
         for (const key of keys) {
@@ -100,6 +103,10 @@ export function DataTable<TData, TValue>({
           return rowValue.toString().includes(value);
         } else if (typeof rowValue === "string") {
           return rowValue.toLowerCase().includes(value);
+        } else if (Array.isArray(rowValue)) {
+          return rowValue.some((item) =>
+            item?.toString().toLowerCase().includes(value),
+          );
         }
         return false;
       });
@@ -117,7 +124,10 @@ export function DataTable<TData, TValue>({
               value={globalFilter}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="w-full max-w-[500px]"
-              onClear={() => setGlobalFilter("")}
+              onClear={() => {
+                setGlobalFilter("");
+                setSearchParams({});
+              }}
             />
             {searchPlaceholder && (
               <Label className="text-muted-foreground text-xs">

@@ -22,6 +22,7 @@ import HiringProcess from "./components/pages/Settings/HiringProcess";
 import Calendar from "./components/pages/Calendar/Calendar";
 import EventDetails from "./components/pages/Calendar/EventDetails";
 import Interviewers from "./components/pages/Calendar/Interviewers";
+import CreateDraft from "./components/pages/Letters/CreateDraft";
 
 const router = createBrowserRouter([
   {
@@ -81,6 +82,10 @@ const router = createBrowserRouter([
           {
             path: "drafts",
             element: <Drafts />,
+          },
+          {
+            path: "drafts/create",
+            element: <CreateDraft />,
           },
           {
             path: "drafts/:id",

@@ -1,11 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { changeCandidateStatus, createCandidate, editCandidate } from ".";
+import {
+  changeCandidateStatus,
+  createCandidate,
+  editCandidate,
+  hireCandidate,
+  rejectCandidate,
+} from ".";
 import { toast } from "sonner";
 import { candidateKeys } from "./keys";
 import { useNavigate } from "react-router-dom";
 import { candidateSchema } from "@/lib/schemas/candidateSchemas";
 import { z } from "zod";
 import { eventKeys } from "../events/keys";
+import { dashboardKeys } from "../dashboard/keys";
 
 export const useCreateCandidate = () => {
   const queryClient = useQueryClient();
@@ -80,7 +87,7 @@ export const useChangeCandidateStatus = () => {
           break;
         case "letter":
           label = "Generate Letter";
-          link = `/letters/send?candidate=${candidate._id}`;
+          link = `/letters/send?candidate=${candidate._id}&type=offer`;
           break;
       }
       toast.success(message, {
@@ -100,5 +107,50 @@ export const useChangeCandidateStatus = () => {
         queryKey: eventKeys.candidate(candidate._id),
       });
     },
+  });
+};
+
+export const useHireCandidate = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: hireCandidate,
+    onSuccess: ({ message, data }) => {
+      toast.success(message);
+      queryClient.invalidateQueries({
+        queryKey: candidateKeys.detail(data._id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: eventKeys.candidate(data._id),
+      });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all() });
+    },
+    onError: ({ message }) => toast.error(message),
+  });
+};
+
+export const useRejectCandidate = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: rejectCandidate,
+    onSuccess: ({ message, data }) => {
+      toast.success(message, {
+        action: {
+          label: "Send Letter",
+          onClick: () =>
+            navigate(`/letters/send?candidate=${data._id}&type=rejection`),
+        },
+      });
+      queryClient.invalidateQueries({
+        queryKey: candidateKeys.detail(data._id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: eventKeys.candidate(data._id),
+      });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all() });
+    },
+    onError: ({ message }) => toast.error(message),
   });
 };

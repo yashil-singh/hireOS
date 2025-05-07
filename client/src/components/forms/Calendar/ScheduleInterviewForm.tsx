@@ -21,6 +21,7 @@ import { useGetEligibleCandidates } from "@/services/candidates/queries";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import FormSubmitButton from "@/components/shared/FormSubmitButton";
+import NoData from "@/components/shared/NoData";
 
 type ScheduleInterviewFormProps = {
   form: UseFormReturn<z.infer<typeof scheduleInterviewSchema>>;
@@ -90,7 +91,7 @@ const ScheduleInterviewForm = ({
     return options;
   };
 
-  return (
+  return candidatesData.data.length > 0 ? (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
@@ -221,6 +222,8 @@ const ScheduleInterviewForm = ({
         <FormSubmitButton isSubmitting={form.formState.isSubmitting} />
       </form>
     </Form>
+  ) : (
+    <NoData label="Currently, there are no candidates in the interview stages." />
   );
 };
 

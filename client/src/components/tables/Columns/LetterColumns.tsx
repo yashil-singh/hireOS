@@ -1,6 +1,5 @@
 import AccountAvatar from "@/components/shared/AccountAvatar";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Letter } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../DataTableColumnHeader";
 import { formatDate } from "date-fns";
@@ -16,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Letter } from "@/services/letter/types";
 
 export const LetterColumns: ColumnDef<Letter>[] = [
   {
@@ -79,7 +79,7 @@ export const LetterColumns: ColumnDef<Letter>[] = [
     id: "actions",
     header: () => <span className="text-primary">Actions</span>,
     cell: ({ row }) => {
-      const { id, candidate } = row.original;
+      const { _id, candidate } = row.original;
 
       return (
         <DropdownMenu>
@@ -97,14 +97,16 @@ export const LetterColumns: ColumnDef<Letter>[] = [
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to={`/letters/${id}`}>View Letter Details</Link>
+              <Link to={`/letters/${_id}`}>View Letter Details</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to={`/candidates/${candidate._id}`}>
                 View Candidate Details
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(id)}>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(_id)}
+            >
               Copy Letter ID
             </DropdownMenuItem>
             <DropdownMenuSeparator />

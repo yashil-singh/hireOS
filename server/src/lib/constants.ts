@@ -14,3 +14,5 @@ export const SECRET = new TextEncoder().encode(JWT_SECRET);
 export const ALG = "HS256";
 export const JWT_EXPIRES_IN = "7d";
 export const COOKIE_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+export const DEFAULT_DATE_FORMAT = "do MMMM yyyy";
+export const DEFAULT_TIME_FORMAT = "hh:mm a";

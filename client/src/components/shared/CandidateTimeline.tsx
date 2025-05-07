@@ -1,27 +1,24 @@
 import { Event } from "@/lib/types";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
-import { Flag, X } from "lucide-react";
+import { Crown, Flag, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/slices/store";
 
 const CandidateTimeline = ({ events }: { events: Event[] }) => {
-  console.log("🚀 ~ CandidateTimeline.tsx:9 ~ events:", events);
-
   const steps = useSelector((state: RootState) => state.hiringProcess.steps);
   const thridInterview = steps.find((step) => step.title.includes("third"));
+  const isHired = events.some((event) => event.title.toLowerCase() === "hired");
+  const hasThirdInterview = events.some(
+    (event) => event.step?.title === thridInterview?.title,
+  );
+  const rejectionEventIndex = events.findIndex(
+    (event) => event.title.toLowerCase() === "rejected",
+  );
+  const isRejected = rejectionEventIndex > -1;
 
   const buildTimeline = () => {
     const timeline = [];
-
-    const hasThirdInterview = events.some(
-      (event) => event.step?.title === thridInterview?.title,
-    );
-
-    const rejectionEventIndex = events.findIndex(
-      (event) => event.title.toLowerCase() === "rejected",
-    );
-
     for (const step of steps) {
       if (step.title.toLowerCase() === "third-interview" && !hasThirdInterview)
         continue;
@@ -31,11 +28,12 @@ const CandidateTimeline = ({ events }: { events: Event[] }) => {
       if (currentEvent) {
         timeline.push({ label: step.title, status: "completed" });
 
-        if (rejectionEventIndex > -1 && step.step === rejectionEventIndex + 1) {
+        if (isRejected && step.step === rejectionEventIndex + 1) {
           timeline.push({ label: "Rejected", status: "rejected" });
           break;
         }
       } else {
+        if (isHired) continue;
         timeline.push({ label: step.title, status: "pending" });
       }
     }
@@ -90,6 +88,17 @@ const CandidateTimeline = ({ events }: { events: Event[] }) => {
           </p>
         </div>
       ))}
+
+      {!isRejected && (
+        <div
+          className={cn(
+            "text-muted-foreground flex flex-col items-center gap-1 text-sm font-bold",
+            isHired && "text-foreground",
+          )}
+        >
+          <Crown className={cn(isHired && "text-primary")} /> Hired
+        </div>
+      )}
     </div>
   );
 };

@@ -4,11 +4,13 @@ import SearchingImage from "@/assets/images/searching.svg";
 import Profiling from "@/assets/images/profiling.svg";
 import GoogleLogo from "@/assets/images/google-icon.svg";
 import AvatarPlaceholder from "@/assets/images/avatar-placeholder.png";
+import NoDataImage from "@/assets/images/empty.svg";
 
 import { NavLink, SelectOption } from "./types";
 import {
   CalendarClock,
   CalendarDays,
+  Crown,
   FilePen,
   FileText,
   FileUser,
@@ -18,6 +20,7 @@ import {
   Settings,
   Upload,
   Users,
+  X,
 } from "lucide-react";
 
 const NavLinks: NavLink[] = [
@@ -71,9 +74,19 @@ const NavLinks: NavLink[] = [
     hasChild: true,
     children: [
       {
-        title: "Generate Letter",
+        title: "Send Letter",
         to: "/letters/send",
         Icon: Send,
+      },
+      {
+        title: "Offer Letter",
+        to: "/letters/send?type=offer",
+        Icon: Crown,
+      },
+      {
+        title: "Rejection Letter",
+        to: "/letters/send?type=rejection",
+        Icon: X,
       },
       {
         title: "Drafts",
@@ -198,6 +211,7 @@ export {
   Favicon,
   NavLinks,
   SearchingImage,
+  NoDataImage,
   Profiling,
   GoogleLogo,
   AvatarPlaceholder,

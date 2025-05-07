@@ -34,7 +34,7 @@ export function Combobox({
 }) {
   return (
     <Popover>
-      <PopoverTrigger className="w-full" asChild>
+      <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
@@ -49,8 +49,8 @@ export function Combobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="start" className="w-auto p-0">
-        <Command>
+      <PopoverContent align="start" className="p-0">
+        <Command className="w-full">
           <CommandInput placeholder={searchPlaceholder} />
           <CommandList>
             <CommandEmpty>Nothing found.</CommandEmpty>

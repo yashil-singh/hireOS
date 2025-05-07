@@ -144,10 +144,12 @@ const EventDetails = () => {
 
   if (!data || error) return <NotFound label="event" />;
 
-  const { _id, title, candidate, start, end, interviewers, status } = data.data;
+  const { _id, title, candidate, start, end, interviewers, status, event } =
+    data.data;
 
   const today = new Date();
   const isPassed = new Date(end) < today;
+  const isCancelled = event.status === "cancelled";
 
   return (
     <>
@@ -157,19 +159,27 @@ const EventDetails = () => {
         <div>
           <span className="flex items-center gap-2">
             <h1 className="page-heading">{title}</h1>
-            {!isPassed && status !== "cancelled" && (
-              <p className="flex items-center gap-1 text-sm text-amber-500">
-                <Clock className="size-4" /> Pending
-              </p>
-            )}
+            {!isCancelled ? (
+              <>
+                {!isPassed && status !== "cancelled" && (
+                  <p className="flex items-center gap-1 text-sm text-amber-500">
+                    <Clock className="size-4" /> Pending
+                  </p>
+                )}
 
-            {isPassed && status === "completed" && (
-              <p className="flex items-center gap-1 text-sm text-green-500">
-                <CircleCheck className="size-4" /> Completed
-              </p>
-            )}
+                {isPassed && status === "completed" && (
+                  <p className="flex items-center gap-1 text-sm text-green-500">
+                    <CircleCheck className="size-4" /> Completed
+                  </p>
+                )}
 
-            {status === "cancelled" && (
+                {status === "cancelled" && (
+                  <p className="text-destructive flex items-center gap-1 text-sm">
+                    <X className="size-4" /> Cancelled
+                  </p>
+                )}
+              </>
+            ) : (
               <p className="text-destructive flex items-center gap-1 text-sm">
                 <X className="size-4" /> Cancelled
               </p>

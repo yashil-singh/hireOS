@@ -290,6 +290,7 @@ const RichTextEditorToolbar = ({
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
+                type="button"
                 variant="ghost-muted"
                 onClick={() => editor.setEditable(!editor.isEditable)}
               >

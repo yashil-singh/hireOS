@@ -11,7 +11,6 @@ import { z } from "zod";
 import { assessmentSchema } from "@/lib/schemas/assessmentSchemas";
 import { cn } from "@/lib/utils";
 import { Input } from "../../ui/input";
-import { Button } from "../../ui/button";
 import { Textarea } from "../../ui/textarea";
 import {
   Select,
@@ -23,6 +22,7 @@ import {
 import { AssessmentTypes, Technologies } from "@/lib/constants";
 import Dropzone from "../../shared/Dropzone";
 import { MultiSelect } from "@/components/ui/multi-select";
+import FormSubmitButton from "@/components/shared/FormSubmitButton";
 
 type AssessmentFormProps = {
   form: UseFormReturn<z.infer<typeof assessmentSchema>>;
@@ -55,7 +55,31 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
 
         <FormField
           control={form.control}
-          name="type"
+          name="technologies"
+          render={({ field }) => (
+            <FormItem className="md:col-span-2">
+              <FormLabel>Related Technologies</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  className="h-12"
+                  options={Technologies}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  placeholder="Select technologies"
+                  variant="inverted"
+                  maxCount={3}
+                  error={!!form.formState.errors.technologies}
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="assessmentType"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Assessment Type</FormLabel>
@@ -67,7 +91,7 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
                 >
                   <SelectTrigger
                     className="h-12! w-full"
-                    aria-invalid={!!form.formState.errors.type}
+                    aria-invalid={!!form.formState.errors.assessmentType}
                   >
                     <SelectValue placeholder="Select assessment type" />
                   </SelectTrigger>
@@ -82,30 +106,6 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
                     ))}
                   </SelectContent>
                 </Select>
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="technology"
-          render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormLabel>Related Technologies</FormLabel>
-              <FormControl>
-                <MultiSelect
-                  className="h-12"
-                  options={Technologies}
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  placeholder="Select technologies"
-                  variant="inverted"
-                  maxCount={3}
-                  error={!!form.formState.errors.technology}
-                />
               </FormControl>
 
               <FormMessage />
@@ -200,7 +200,7 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
           )}
         />
 
-        <Button className="w-full">Submit</Button>
+        <FormSubmitButton isSubmitting={form.formState.isSubmitting} />
       </form>
     </Form>
   );

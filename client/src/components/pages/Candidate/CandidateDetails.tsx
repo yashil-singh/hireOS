@@ -37,6 +37,7 @@ import {
   Building,
   Calendar,
   Code,
+  Crown,
   Download,
   EllipsisVertical,
   File,
@@ -46,8 +47,6 @@ import {
   Mail,
   Phone,
   ScanText,
-  Star,
-  Text,
   Trophy,
   X,
 } from "lucide-react";
@@ -56,13 +55,28 @@ import { useSelector } from "react-redux";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import NotFound from "../NotFound";
 import { useGetEventsByCandidateId } from "@/services/events/queries";
-import { useChangeCandidateStatus } from "@/services/candidates/mutations";
+import {
+  useChangeCandidateStatus,
+  useHireCandidate,
+  useRejectCandidate,
+} from "@/services/candidates/mutations";
 import { format, formatDistanceToNow } from "date-fns";
-import { DEFAULT_DATE_FORMAT } from "@/lib/constants";
+import { DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT } from "@/lib/constants";
 import { toast } from "sonner";
 import { useGetCalendarEventsByCandidateId } from "@/services/calendar/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import CandidateInterviewCard from "@/components/shared/CandidateInterviewCard";
+import { useGetAssessmentsByCandidateId } from "@/services/assessments/queries";
+import Rating from "@/components/shared/Rating";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const CandidateDetails = () => {
   const navigate = useNavigate();
@@ -72,6 +86,9 @@ const CandidateDetails = () => {
 
   const [view, setView] = useState<"info" | "timeline">("info");
   const [selectedStepId, setSelectedStepId] = useState<string | undefined>();
+
+  const [openHire, setOpenHire] = useState(false);
+  const [openReject, setOpenReject] = useState(false);
 
   // Queries
   const { data, isPending, error } = useGetCandidateById(id!);
@@ -85,9 +102,13 @@ const CandidateDetails = () => {
     isLoading: calendarEventsLoading,
     error: calendarEventsError,
   } = useGetCalendarEventsByCandidateId(id!);
+  const { data: assessmentsData, isPending: isAssessmentsLoading } =
+    useGetAssessmentsByCandidateId(id!);
 
   // Mutations
   const changeCandidateStatusMutation = useChangeCandidateStatus();
+  const { mutateAsync: hire, isPending: isHiring } = useHireCandidate();
+  const { mutateAsync: reject, isPending: isRejecting } = useRejectCandidate();
 
   const usedStepIds = useMemo(() => {
     return eventsData?.data.map((event) => event.step?._id) ?? [];
@@ -128,11 +149,20 @@ const CandidateDetails = () => {
     }
   }, [eventsData]);
 
-  if (isPending || isEventsLoading) return <CandidateDetailsSkeleton />;
+  if (isPending || isEventsLoading || isAssessmentsLoading)
+    return <CandidateDetailsSkeleton />;
 
   if (!data) return <NotFound label="candidate" />;
 
   const { data: candidate } = data;
+
+  const isHired = candidate.status === "hired";
+  const isRejected = candidate.status === "rejected";
+  const isOfferLetterSent = eventsData?.data.some(
+    (event) =>
+      event.title.toLowerCase().includes("offer") &&
+      event.status === "completed",
+  );
 
   return (
     <>
@@ -141,42 +171,57 @@ const CandidateDetails = () => {
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
         <h1 className="page-heading mt-4">Candidate Details</h1>
 
-        <div className="flex w-fit items-center gap-2">
-          <p className="text-muted-foreground text-sm">Status</p>
-          <Select
-            value={selectedStepId}
-            onValueChange={handleChangeStep}
-            disabled={changeCandidateStatusMutation.isPending}
-          >
-            <SelectTrigger className="w-full max-w-[250px] capitalize">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              {steps.map((step) => (
-                <SelectItem
-                  disabled={
-                    !availableSteps.map((s) => s._id).includes(step._id)
-                  }
-                  value={step._id}
-                  key={`status-${step._id}`}
-                  className="capitalize"
-                >
-                  {step.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {changeCandidateStatusMutation.isPending && (
-            <Loader2 className="animate-spin" />
-          )}
+        {!isHired && !isRejected && (
+          <div className="flex w-fit items-center gap-2">
+            <p className="text-muted-foreground text-sm">Status</p>
+            <Select
+              value={selectedStepId}
+              onValueChange={handleChangeStep}
+              disabled={
+                changeCandidateStatusMutation.isPending || isHired || isRejected
+              }
+            >
+              <SelectTrigger className="w-full max-w-[250px] capitalize">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                {steps.map((step) => (
+                  <SelectItem
+                    disabled={
+                      !availableSteps.map((s) => s._id).includes(step._id)
+                    }
+                    value={step._id}
+                    key={`status-${step._id}`}
+                    className="capitalize"
+                  >
+                    {step.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Button>
-            <Text /> Offer Letter
-          </Button>
-          <Button variant="destructive">
-            <X /> Reject
-          </Button>
-        </div>
+            {changeCandidateStatusMutation.isPending && (
+              <Loader2 className="animate-spin" />
+            )}
+
+            {candidate.status === "offer" && isOfferLetterSent && (
+              <Button
+                onClick={() => setOpenHire(true)}
+                disabled={isHired || isRejected}
+              >
+                <Crown /> Hire
+              </Button>
+            )}
+
+            <Button
+              onClick={() => setOpenReject(true)}
+              disabled={isHired || isRejected}
+              variant="destructive"
+            >
+              <X /> Reject
+            </Button>
+          </div>
+        )}
       </div>
 
       <Card className="my-4">
@@ -341,8 +386,11 @@ const CandidateDetails = () => {
                             : "pending"
                       }
                     >
-                      <TimelineTime>
-                        {format(new Date(event.createdAt), DEFAULT_DATE_FORMAT)}{" "}
+                      <TimelineTime className="text-center">
+                        {format(
+                          new Date(event.createdAt),
+                          `do MMM yyyy, ${DEFAULT_TIME_FORMAT}`,
+                        )}{" "}
                         •{" "}
                         {formatDistanceToNow(new Date(event.createdAt), {
                           addSuffix: true,
@@ -363,9 +411,12 @@ const CandidateDetails = () => {
                         <TimelineDescription>
                           {format(
                             new Date(activity.createdAt),
-                            DEFAULT_DATE_FORMAT,
+                            `do MMM yyyy, ${DEFAULT_TIME_FORMAT}`,
                           )}{" "}
-                          • {formatDistanceToNow(new Date(activity.createdAt))}
+                          •{" "}
+                          {formatDistanceToNow(new Date(activity.createdAt), {
+                            addSuffix: true,
+                          })}
                         </TimelineDescription>
                       </TimelineEvent>
                     ))}
@@ -424,65 +475,163 @@ const CandidateDetails = () => {
           )}
 
           {/* Assessment Evaluations */}
-          <Card className="h-fit gap-4">
-            <CardHeader>
-              <CardTitle className="text-xl">Evaluations</CardTitle>
-              <CardDescription className="sr-only">
-                The details of the candidate and history of the candidate in the
-                hiring process.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-b pb-4 last:border-b-0 last:pb-0">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-primary/10 text-primary rounded-md p-2">
-                      {/* <File className="size-7" /> */}
-                      <LinkIcon className="size-7" />
-                    </span>
-                    <span>
-                      <b className="text-lg">Assessment Title</b>
-                      <p className="text-muted-foreground flex items-center gap-1">
-                        Assigned on {format(new Date(), DEFAULT_DATE_FORMAT)}
-                      </p>
-                    </span>
-                  </div>
+          {isAssessmentsLoading ? (
+            <Skeleton className="h-[200px] w-full" />
+          ) : (
+            <Card className="h-fit gap-4">
+              <CardHeader>
+                <CardTitle className="text-xl">Evaluations</CardTitle>
+                <CardDescription className="sr-only">
+                  The details of the candidate and history of the candidate in
+                  the hiring process.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {assessmentsData && assessmentsData.data.length < 1 ? (
+                  <p className="text-muted-foreground text-center">
+                    No assessments assigned yet.
+                  </p>
+                ) : (
+                  assessmentsData?.data.map((assessment) => {
+                    const candidateAssignment = assessment.assignments.find(
+                      (a) => a.candidate._id === candidate._id,
+                    );
 
-                  <Button variant="ghost" size="icon">
-                    <EllipsisVertical />
-                  </Button>
-                </div>
+                    return (
+                      <div
+                        key={assessment._id}
+                        className="border-b pb-4 last:border-b-0 last:pb-0"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <span className="bg-primary/10 text-primary rounded-md p-2">
+                              {assessment.format === "file" && (
+                                <File className="size-7" />
+                              )}
+                              {assessment.format === "link" && (
+                                <LinkIcon className="size-7" />
+                              )}
+                            </span>
+                            <span>
+                              <b className="text-lg">{assessment.title}</b>
+                              <p className="text-muted-foreground flex items-center gap-1">
+                                Evaluated on{" "}
+                                {format(
+                                  new Date(candidateAssignment!.updatedAt),
+                                  `${DEFAULT_DATE_FORMAT}, ${DEFAULT_TIME_FORMAT}`,
+                                )}
+                              </p>
+                            </span>
+                          </div>
 
-                <div className="mt-2 mb-4 space-y-2">
-                  <p>Some remarks</p>
-                  <b className="text-3xl">4.0</b>
-                  <div className="ml-2 inline-flex gap-1">
-                    {[0, 1, 2, 3, 4].map((value) => (
-                      <Star
-                        className={cn(
-                          "text-primary size-5",
-                          value !== 4 && "fill-primary",
+                          <Button variant="ghost" size="icon">
+                            <EllipsisVertical />
+                          </Button>
+                        </div>
+
+                        {candidateAssignment!.status === "evaluated" ? (
+                          <div className="mt-2 mb-4 space-y-2">
+                            <p>{candidateAssignment?.remarks}</p>
+                            <div className="ml-2 inline-flex gap-1">
+                              <Rating
+                                value={candidateAssignment!.rating!}
+                                onChange={() => {}}
+                                labelClassName="text-3xl"
+                              />
+                            </div>
+                            <div className="text-muted-foreground flex items-center text-sm">
+                              Evaluated by
+                              <AccountAvatar
+                                className="mr-1 ml-2 size-5"
+                                avatarUrl={
+                                  candidateAssignment?.interviewer.avatarUrl
+                                }
+                              />
+                              <span>
+                                {candidateAssignment?.interviewer.email}
+                              </span>
+                            </div>
+                          </div>
+                        ) : (
+                          <></>
                         )}
-                        key={`star-${value}`}
-                      />
-                    ))}
-                  </div>
-                </div>
 
-                <div className="flex w-full items-end">
-                  <Button className="ml-auto w-full md:w-fit" asChild>
-                    <Link to={`/assessments/asdasd`}>
-                      <Info /> Details
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                        <div className="flex w-full items-end">
+                          <Button className="ml-auto w-full md:w-fit" asChild>
+                            <Link to={`/assessments/${assessment._id}`}>
+                              <Info /> Details
+                            </Link>
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
 
       <ToTopButton />
+
+      <AlertDialog open={openHire} onOpenChange={setOpenHire}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confrim Hire</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to hire this candidate? This action will
+              move the candidate to the hired stage.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div></div>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isHiring}>Cancel</AlertDialogCancel>
+            <Button
+              disabled={isHiring}
+              onClick={async () => {
+                await hire(id!, {
+                  onSettled: () => {
+                    setOpenHire(false);
+                  },
+                });
+              }}
+            >
+              {isHiring && <Loader2 className="animate-spin" />}
+              {isHiring ? "Hiring" : "Hire Candidate"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={openReject} onOpenChange={setOpenReject}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confrim Rejection</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to reject this candidate? This action will
+              move the candidate to the rejected stage.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isRejecting}>Cancel</AlertDialogCancel>
+            <Button
+              variant="destructive"
+              disabled={isRejecting}
+              onClick={async () => {
+                await reject(id!, {
+                  onSettled: () => {
+                    setOpenReject(false);
+                  },
+                });
+              }}
+            >
+              {isRejecting && <Loader2 className="animate-spin" />}
+              {isRejecting ? "Rejecting" : "Reject Candidate"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { rescheduleInterviewSchema } from "@/lib/schemas/interviewSchemas";
 import { z } from "zod";
 import { eventKeys } from "../events/keys";
+import { dashboardKeys } from "../dashboard/keys";
 
 export const useScheduleInterview = () => {
   const queryClient = useQueryClient();
@@ -18,6 +19,7 @@ export const useScheduleInterview = () => {
     onSuccess: ({ message }) => {
       toast.success(message);
       queryClient.invalidateQueries({ queryKey: calendarKeys.all() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all() });
     },
     onError: ({ message }) => toast.error(message),
   });
@@ -36,6 +38,7 @@ export const useRescheduleInterview = () => {
     onSuccess: ({ message }) => {
       toast.success(message);
       queryClient.invalidateQueries({ queryKey: calendarKeys.all() });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all() });
     },
     onError: ({ message }) => toast.error(message),
   });
@@ -65,6 +68,7 @@ export const useSendInterviewReminder = () => {
       queryClient.invalidateQueries({
         queryKey: eventKeys.candidate(data.candidate._id),
       });
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all() });
     },
     onError: ({ message }) => toast.error(message),
   });

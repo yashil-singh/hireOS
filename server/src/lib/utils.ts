@@ -4,6 +4,7 @@ import { ALG, COOKIE_MAX_AGE, JWT_EXPIRES_IN, SALT, SECRET } from "./constants";
 import bcrypt from "bcryptjs";
 import { JWTPayload } from "./types";
 import { jwtVerify, SignJWT } from "jose";
+import Candidate from "@/models/Candidate";
 
 export const errorResponse = ({
   res,

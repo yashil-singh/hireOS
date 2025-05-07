@@ -19,7 +19,7 @@ const RootLayout = () => {
       <section className="w-full">
         <Header />
 
-        <main className="p-4">
+        <main className="p-4 pb-8">
           <Outlet />
         </main>
       </section>

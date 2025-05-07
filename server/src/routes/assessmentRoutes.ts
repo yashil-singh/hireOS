@@ -1,27 +1,31 @@
 import {
+  assignAssessment,
   createAssessment,
   deleteAssessment,
+  evaluateAssessment,
   getAllAssessments,
   getAssessmentById,
   getAssessmentsByCandidateId,
-  updatedAssessment,
+  updateAssessment,
 } from "@/controllers/assessmentController";
-import {
-  addAssessmentSchema,
-  updateAssessmentSchema,
-} from "@/lib/schemas/assessmentSchemas";
+import { assessmentSchema } from "@/lib/schemas/assessmentSchemas";
 import validateData from "@/middlewares/validateData";
 import express from "express";
 
 const router = express.Router();
 
-router.post("/", validateData(addAssessmentSchema), createAssessment);
+router.post("/", validateData(assessmentSchema), createAssessment);
+router.post("/:id/assign", assignAssessment);
+router.post(
+  "/:assessmentId/candidate/:candidateId/evaluate",
+  evaluateAssessment
+);
 
 router.get("/", getAllAssessments);
 router.get("/:id", getAssessmentById);
 router.get("/candidate/:id", getAssessmentsByCandidateId);
 
-router.patch("/:id", validateData(updateAssessmentSchema), updatedAssessment);
+router.patch("/:id", validateData(assessmentSchema), updateAssessment);
 
 router.delete("/:id", deleteAssessment);
 

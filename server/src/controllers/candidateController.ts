@@ -98,13 +98,24 @@ export const getEligibleCandidates = async (req: Request, res: Response) => {
       break;
 
     case "assessment":
+      candidates = await Candidate.find({ status });
+      break;
+
     case "offer":
       candidates = await Candidate.find({ status });
       break;
 
+    case "rejection":
+      candidates = await Candidate.find({
+        status: { $regex: "reject", $options: "i" },
+      });
+      break;
+
     default:
       candidates = await Candidate.find({
-        $nin: ["hired", "rejected", "black-listed"],
+        status: {
+          $nin: ["black-listed"],
+        },
       });
       break;
   }
@@ -176,7 +187,12 @@ export const changeCandidateStatus = async (req: Request, res: Response) => {
   const candidate = await Candidate.findById(id);
   if (!candidate) return throwError("Candidate not found.", 404);
 
-  if (candidate.status === "hired") throwError("Candidate is already hired.");
+  if (candidate.status === "hired")
+    return throwError("Candidate is already hired");
+  if (candidate.status === "rejected")
+    return throwError("Candidate is already rejected.");
+  if (candidate.status === "blacklisted")
+    return throwError("Candidate is blacklisted.");
 
   const step = await HiringProcess.findById(stepId);
 
@@ -195,18 +211,16 @@ export const changeCandidateStatus = async (req: Request, res: Response) => {
 
   if (!currentEvent || !currentStep) return throwError("Invalid event data.");
 
-  if (!isCurrentEventCompleted)
-    return throwError(`\`${currentStep!.title}\` is not completed yet.`);
-
-  if (!nextStep) return throwError("No further steps required.");
-
-  if (step.step < nextStep.step)
+  if (step.step < currentStep.step)
     return throwError(
       "You cannot move the candidate back to a previous step in the hiring process."
     );
 
+  if (!nextStep) return throwError("No further steps required.");
+
   if (step.step > nextStep.step) {
     if (
+      !step.title.includes("offer") &&
       nextRequiredStep &&
       step._id.toString() !== nextRequiredStep._id.toString()
     ) {
@@ -215,6 +229,9 @@ export const changeCandidateStatus = async (req: Request, res: Response) => {
       );
     }
   }
+
+  if (!isCurrentEventCompleted)
+    return throwError(`\`${currentStep!.title}\` is not completed yet.`);
 
   await Event.create({
     title: step.title,
@@ -242,5 +259,142 @@ export const changeCandidateStatus = async (req: Request, res: Response) => {
     res,
     message: "Candidate status updated.",
     data: { type, candidate: updatedCandidate },
+  });
+};
+
+export const hireCandidate = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  if (!isObjectId(id)) return throwError(`Invalid candidate ID - ${id}`);
+
+  const candidate = await Candidate.findById(id);
+  if (!candidate) return throwError(`Candidate - ${id} not found.`);
+
+  if (candidate.status === "hired")
+    return throwError("Candidate is already hired");
+  if (candidate.status === "rejected")
+    return throwError("Candidate is already rejected.");
+  if (candidate.status === "blacklisted")
+    return throwError("Candidate is blacklisted.");
+
+  const { currentStep, currentEvent, isCurrentEventCompleted } =
+    await getCandidateProgressStatus(id);
+
+  const activites = currentEvent.activities;
+
+  if (activites.length > 0) {
+    if (!isCurrentEventCompleted)
+      return throwError(
+        `Candidate has pending tasks left in the ${currentStep.title} stage.`
+      );
+  }
+
+  await Event.create({
+    title: "Hired",
+    status: "completed",
+    candidate: candidate._id,
+    activities: [
+      {
+        title: "Status Update",
+        description: "Candidate moved to hired status.",
+      },
+    ],
+  });
+
+  candidate.status = "hired";
+  const updatedCandidate = await candidate.save();
+
+  successResponse({
+    res,
+    message: `Candidate ${candidate.name} - ${candidate.email} hired.`,
+    data: updatedCandidate,
+  });
+};
+
+export const rejectCandidate = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!isObjectId(id)) return throwError(`Invalid candidate ID - ${id}`);
+
+  const candidate = await Candidate.findById(id);
+  if (!candidate) return throwError(`Candidate - ${id} not found.`, 404);
+
+  if (candidate.status === "hired")
+    return throwError("Candidate is already hired");
+  if (candidate.status === "rejected")
+    return throwError("Candidate is already rejected.");
+  if (candidate.status === "blacklisted")
+    return throwError("Candidate is blacklisted.");
+
+  const { isCurrentEventCompleted, currentEvent, currentStep } =
+    await getCandidateProgressStatus(id);
+
+  if (!isCurrentEventCompleted) {
+    if (currentEvent.activities.length > 0)
+      return throwError(
+        `Candidate has pending tasks left in the ${currentStep.title} stage.`
+      );
+
+    currentEvent.status = "cancelled";
+  }
+
+  candidate.status = "rejected";
+  await currentEvent.save();
+
+  await Event.create({
+    title: "Rejected",
+    candidate: candidate._id,
+    activities: [
+      {
+        title: "Status Update",
+        description: "Candidate moved to rejected status.",
+      },
+    ],
+  });
+
+  const updatedCandidate = await candidate.save();
+
+  successResponse({
+    res,
+    message: `Candidate ${candidate.name} - ${candidate.email} rejected.`,
+    data: updatedCandidate,
+  });
+};
+
+export const blacklistCandidate = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  if (!isObjectId(id)) return throwError(`Invalid candidate ID - ${id}`);
+
+  const candidate = await Candidate.findById(id);
+  if (!candidate) return throwError(`Candidate - ${id} not found.`);
+
+  if (candidate.status === "hired")
+    return throwError("Candidate is already hired");
+  if (candidate.status === "rejected")
+    return throwError("Candidate is already rejected.");
+  if (candidate.status === "blacklisted")
+    return throwError("Candidate is blacklisted.");
+
+  const { isCurrentEventCompleted, currentEvent } =
+    await getCandidateProgressStatus(id);
+
+  candidate.status = "black-listed";
+
+  await Event.create({
+    title: "Black-Listed",
+    status: "completed",
+    candidate: candidate._id,
+  });
+
+  if (!isCurrentEventCompleted) {
+    currentEvent.status = "cancelled";
+    await currentEvent.save();
+  }
+
+  const updatedCandidate = await candidate.save();
+
+  successResponse({
+    res,
+    message: `Candidate ${candidate.name} - ${candidate.email} rejected.`,
+    data: updatedCandidate,
   });
 };

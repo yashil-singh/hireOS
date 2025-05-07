@@ -11,10 +11,10 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableColumnHeader } from "../DataTableColumnHeader";
-import { Candidate } from "@/lib/types";
 import { Link } from "react-router-dom";
 import AccountAvatar from "@/components/shared/AccountAvatar";
 import { differenceInDays } from "date-fns";
+import { Candidate } from "@/services/candidates/type";
 
 export const CandidateColumns: ColumnDef<Candidate>[] = [
   {

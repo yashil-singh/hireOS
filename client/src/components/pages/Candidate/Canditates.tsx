@@ -9,7 +9,8 @@ import { toast } from "sonner";
 
 const Candidates = () => {
   const [searchParams] = useSearchParams();
-  const initialSearchQuery = searchParams.get("search") ?? "";
+  const initialSearchQuery =
+    searchParams.get("search") || searchParams.get("status") || "";
 
   const { data, isLoading, error } = useGetAllCandidates();
 
@@ -43,6 +44,7 @@ const Candidates = () => {
         addDataTitle=""
         addDataDescription=""
         initialSearchQuery={initialSearchQuery}
+        searchPlaceholder="Search for candidates using id, name, email, phone, technology, level and status."
         topChildren={
           <Button asChild>
             <Link to="/candidates/add">

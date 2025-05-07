@@ -15,8 +15,11 @@ import hiringProcessRoutes from "@/routes/hiringProcessRoutes";
 import eventRoutes from "@/routes/eventRoutes";
 import interviewerRoutes from "@/routes/interviewerRoutes";
 import interviewRoutes from "@/routes/interviewRoutes";
+import letterRoutes from "@/routes/letterRoutes";
 import { seedHiringSteps } from "./controllers/hiringProcessController";
 import { authenticate } from "./middlewares/authenticate";
+import { seedDrafts, seedDraftVariables } from "./controllers/draftController";
+import { getDashboardData } from "./controllers/dashboardController";
 
 dotenv.config();
 
@@ -42,11 +45,15 @@ app.use("/api/hiring-process", authenticate, hiringProcessRoutes);
 app.use("/api/events", authenticate, eventRoutes);
 app.use("/api/interviewers", authenticate, interviewerRoutes);
 app.use("/api/calendar", authenticate, interviewRoutes);
+app.use("/api/letters", authenticate, letterRoutes);
+app.use("/api/dashboard", authenticate, getDashboardData);
 
 connectDB();
 
 const seed = async () => {
   await seedHiringSteps();
+  await seedDraftVariables();
+  await seedDrafts();
 };
 
 seed();
