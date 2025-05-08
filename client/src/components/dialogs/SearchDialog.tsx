@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -11,17 +11,69 @@ import {
 import SearchInput from "../shared/SearchInput";
 import { Separator } from "../ui/separator";
 import { useEffect, useState } from "react";
+import { useSearchCandidates } from "@/services/candidates/queries";
+import { Skeleton } from "../ui/skeleton";
+import { useDebounce } from "use-debounce";
+import NoData from "../shared/NoData";
+import AccountAvatar from "../shared/AccountAvatar";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/slices/store";
+import {
+  appendSearchHistory,
+  clearSearchHistory,
+  removeFromSearchHistory,
+} from "@/lib/slices/searchHistory/searchHistorySlice";
+import { Badge } from "../ui/badge";
 
 type SearchDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const searchHistory = useSelector(
+    (state: RootState) => state.searchHistory.results,
+  );
+  const dispatch = useDispatch();
+
+  const [searchQuery, setSearchQuery] = useState("tes");
+  const [debouncedQuery] = useDebounce(searchQuery, 500);
+
+  // Queries
+  const { data, isPending, refetch } = useSearchCandidates(debouncedQuery);
+
+  useEffect(() => {
+    if (debouncedQuery.length > 0) {
+      refetch();
+    }
+  }, [debouncedQuery, refetch]);
 
   useEffect(() => {
     setSearchQuery("");
   }, [open]);
+
+  function highlightMatch(text: string): (string | React.ReactNode)[] {
+    if (!searchQuery.trim()) return [text];
+
+    const regex = new RegExp(`(${searchQuery})`, "gi");
+    const parts = text.split(regex);
+
+    return parts.map((part, i) => {
+      const isMatch = part.toLowerCase() === searchQuery.toLowerCase();
+
+      return isMatch ? (
+        <mark key={i} className="bg-secondary text-primary font-semibold">
+          {part}
+        </mark>
+      ) : (
+        <span key={i}>{part}</span>
+      );
+    });
+  }
+
+  const isLoading = isPending && searchQuery.trim().length > 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -49,11 +101,14 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
           </DialogDescription>
         </DialogHeader>
 
-        <span className="sticky top-0">
+        <span className="sticky top-0 z-10">
           <SearchInput
             value={searchQuery}
             onValueChange={setSearchQuery}
-            onClear={() => setSearchQuery("")}
+            onClear={() => {
+              setSearchQuery("");
+              refetch();
+            }}
             className="bg-card! rounded-none border-none shadow-none"
             placeholder="Search for candidate profiles using name, email, technology, or status..."
           />
@@ -61,13 +116,117 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
         </span>
 
         <div className="space-y-4 p-4">
-          <div className="flex items-center justify-between gap-2">
-            <p className="text-muted-foreground font-medium">Recent Searches</p>
+          {isLoading ? (
+            <>
+              <Skeleton className="h-[60px] w-full" />
+              <Skeleton className="h-[60px] w-full" />
+              <Skeleton className="h-[60px] w-full" />
+            </>
+          ) : searchQuery.trim().length === 0 ? (
+            <>
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-medium">Recent Searches</p>
+                <Button
+                  variant="link"
+                  className="h-fit p-0"
+                  onClick={() => dispatch(clearSearchHistory())}
+                >
+                  Clear
+                </Button>
+              </div>
 
-            <Button variant="link" className="h-fit p-0">
-              Clear
-            </Button>
-          </div>
+              {searchHistory.length > 0 ? (
+                searchHistory.map((candidate) => (
+                  <button
+                    key={candidate._id}
+                    className="hover:bg-accent flex w-full items-center justify-between gap-4 rounded-xl border p-4 transition-colors"
+                    onClick={() => {
+                      navigate(`/candidates/${candidate._id}`);
+                      onOpenChange(false);
+                    }}
+                  >
+                    <div className="flex items-center gap-4">
+                      <AccountAvatar />
+                      <div className="flex flex-col items-start">
+                        <div className="text-left">
+                          <span>{candidate.name}</span> •{" "}
+                          <span>{candidate.email}</span>
+                        </div>
+                        <span className="text-sm capitalize">
+                          {candidate.level}
+                        </span>
+                        <span className="text-sm capitalize">
+                          {candidate.status}
+                        </span>
+                        <div className="mt-1 flex items-center gap-2">
+                          {candidate.technology.map((tech) => (
+                            <Badge variant="outline" key={tech}>
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(removeFromSearchHistory(candidate._id));
+                      }}
+                    >
+                      <X />
+                    </Button>
+                  </button>
+                ))
+              ) : (
+                <p className="text-muted-foreground text-center text-sm">
+                  No recent searches.
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <h2 className="font-medium">Search Results</h2>
+              {(data?.data.length ?? 0 > 0) ? (
+                data?.data.map((candidate) => (
+                  <button
+                    key={candidate._id}
+                    className="hover:bg-accent flex w-full items-center gap-4 rounded-xl border p-4 transition-colors"
+                    onClick={() => {
+                      dispatch(appendSearchHistory(candidate));
+                      navigate(`/candidates/${candidate._id}`);
+                      onOpenChange(false);
+                    }}
+                  >
+                    <AccountAvatar />
+                    <div className="flex flex-col items-start">
+                      <div className="text-left">
+                        <span>{highlightMatch(candidate.name)}</span> •{" "}
+                        <span>{highlightMatch(candidate.email)}</span>
+                      </div>
+                      <span className="text-sm capitalize">
+                        {highlightMatch(candidate.level)}
+                      </span>
+                      <span className="text-sm capitalize">
+                        {highlightMatch(candidate.status)}
+                      </span>
+                      <div className="mt-1 flex items-center gap-2">
+                        {candidate.technology.map((tech) => (
+                          <Badge variant="outline" key={tech}>
+                            {highlightMatch(tech)}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  </button>
+                ))
+              ) : (
+                <NoData label="No results found." />
+              )}
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>

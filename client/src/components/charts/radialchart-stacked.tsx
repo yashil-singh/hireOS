@@ -36,7 +36,7 @@ const RadialchartStacked = ({
   accepted: number;
   pending: number;
 }) => {
-  const chartData = [{ month: "january", rejected, accepted, pending }];
+  const chartData = [{ rejected, accepted, pending }];
 
   const totalVisitors =
     chartData[0].rejected + chartData[0].accepted + chartData[0].pending;
@@ -77,7 +77,6 @@ const RadialchartStacked = ({
         <RadialBar
           dataKey="accepted"
           stackId="a"
-          cornerRadius={5}
           fill="var(--color-accepted)"
           className="stroke-transparent stroke-2"
         />
@@ -85,14 +84,12 @@ const RadialchartStacked = ({
           dataKey="pending"
           fill="var(--color-pending)"
           stackId="a"
-          cornerRadius={5}
           className="stroke-transparent stroke-2"
         />
         <RadialBar
           dataKey="rejected"
           fill="var(--color-rejected)"
           stackId="a"
-          cornerRadius={5}
           className="stroke-transparent stroke-2"
         />
         <Legend

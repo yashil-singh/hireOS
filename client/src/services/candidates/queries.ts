@@ -1,5 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getAllCandidates, getCandidateById, getEligibleCandidates } from ".";
+import {
+  getAllCandidates,
+  getCandidateById,
+  getEligibleCandidates,
+  searchCandidates,
+} from ".";
 import { candidateKeys } from "./keys";
 
 export const useGetAllCandidates = () => {
@@ -22,5 +27,13 @@ export const useGetEligibleCandidates = (status?: string) => {
   return useQuery({
     queryFn: () => getEligibleCandidates(status),
     queryKey: candidateKeys.eligibleWithStatus(status ?? ""),
+  });
+};
+
+export const useSearchCandidates = (query: string) => {
+  return useQuery({
+    queryFn: () => searchCandidates(query),
+    queryKey: candidateKeys.search(query),
+    enabled: false,
   });
 };

@@ -3,13 +3,14 @@ import sideBarReducer from "@/lib/slices/sideBar/sideBarSlice";
 import themeReducer from "@/lib/slices/theme/themeSlice";
 import sessionReducer from "@/lib/slices/session/sessionSlice";
 import hringProcessReducer from "@/lib/slices/hiringProcess/hiringProcessSlice";
+import searchHistoryReducer from "@/lib/slices/searchHistory/searchHistorySlice";
 import storage from "redux-persist/lib/storage";
 import { persistStore, persistReducer } from "redux-persist";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["sidebar", "theme"],
+  whitelist: ["sidebar", "theme", "searchHistory"],
 };
 
 const rootReducer = combineReducers({
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   theme: themeReducer,
   session: sessionReducer,
   hiringProcess: hringProcessReducer,
+  searchHistory: searchHistoryReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

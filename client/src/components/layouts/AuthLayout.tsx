@@ -1,7 +1,6 @@
 import { GoogleLogo, Logo, Profiling } from "@/lib/constants";
 import { Navigate, Outlet } from "react-router-dom";
 import { Button } from "../ui/button";
-import { Github } from "lucide-react";
 import { useGoogleOneTapLogin } from "@react-oauth/google";
 import { toast } from "sonner";
 import { googleLogin, googleOneTapLogin } from "@/services/auth";
@@ -57,10 +56,6 @@ const AuthLayout = () => {
             <Button variant="outline" className="w-full" onClick={googleLogin}>
               Continue with Google
               <img src={GoogleLogo} alt="google logo" className="size-5" />
-            </Button>
-            <Button variant="outline" className="w-full">
-              Continue with Github
-              <Github className="size-5" />
             </Button>
           </div>
         </div>

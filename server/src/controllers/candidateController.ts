@@ -279,14 +279,13 @@ export const hireCandidate = async (req: Request, res: Response) => {
   const { currentStep, currentEvent, isCurrentEventCompleted } =
     await getCandidateProgressStatus(id);
 
-  const activites = currentEvent.activities;
+  const currentStepTitle = currentEvent.step.title.toLowerCase();
 
-  if (activites.length > 0) {
-    if (!isCurrentEventCompleted)
-      return throwError(
-        `Candidate has pending tasks left in the ${currentStep.title} stage.`
-      );
-  }
+  if (!currentStepTitle.includes("offer"))
+    return throwError("Candidate is not in offer stage.");
+
+  if (!isCurrentEventCompleted)
+    return throwError("Offer letter is not sent yet.");
 
   await Event.create({
     title: "Hired",
@@ -397,4 +396,22 @@ export const blacklistCandidate = async (req: Request, res: Response) => {
     message: `Candidate ${candidate.name} - ${candidate.email} rejected.`,
     data: updatedCandidate,
   });
+};
+
+export const searchCandidates = async (req: Request, res: Response) => {
+  const { query } = req.query;
+
+  if (!query) return throwError("Search query is required.");
+
+  const candidates = await Candidate.find({
+    $or: [
+      { name: { $regex: query, $options: "i" } },
+      { email: { $regex: query, $options: "i" } },
+      { technology: { $regex: query, $options: "i" } },
+      { level: { $regex: query, $options: "i" } },
+      { status: { $regex: query, $options: "i" } },
+    ],
+  });
+
+  successResponse({ res, data: candidates });
 };

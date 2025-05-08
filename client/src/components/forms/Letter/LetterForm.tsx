@@ -301,7 +301,7 @@ const LetterForm = ({
       </form>
     </Form>
   ) : (
-    <NoData label="Currently, no candidates in the offer stage." />
+    <NoData label="Currently, there are no candidates available." />
   );
 };
 

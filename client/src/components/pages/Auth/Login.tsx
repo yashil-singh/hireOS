@@ -91,16 +91,7 @@ const Login = () => {
             )}
           />
 
-          <div className="w-full text-right">
-            <Link
-              to="forgort-password"
-              className="text-primary ml-auto text-sm underline"
-            >
-              Forgot your password?{" "}
-            </Link>
-          </div>
-
-          <Button className="w-full" disabled={isSubmitting}>
+          <Button className="mt-4 w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="animate-spin" />}
             {isSubmitting ? "Logging in" : "Login"}
           </Button>

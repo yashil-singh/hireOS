@@ -16,6 +16,8 @@ import { useSelector } from "react-redux";
 import { z } from "zod";
 import InterviewerCard from "@/components/shared/InterviewerCard";
 import InterviewerForm from "@/components/forms/Interviewer/InterviewerForm";
+import NotFound from "../NotFound";
+import NoData from "@/components/shared/NoData";
 
 const Interviewers = () => {
   const isSidebarCollapsed = useSelector(
@@ -29,8 +31,11 @@ const Interviewers = () => {
 
   const { mutateAsync } = useCreateInteriviewer();
 
-  const { data: interviewerData, isLoading: interviewerDataLoading } =
-    useGetAllInterviewers();
+  const {
+    data: interviewerData,
+    isLoading: interviewerDataLoading,
+    error: interviewerDataError,
+  } = useGetAllInterviewers();
 
   const form = useForm<z.infer<typeof interviwerSchema>>({
     defaultValues: {
@@ -66,6 +71,10 @@ const Interviewers = () => {
 
   if (interviewerDataLoading) return <CardLayoutSkeleton />;
 
+  if (!interviewerData || interviewerDataError) return <NotFound />;
+
+  const interviewers = interviewerData.data;
+
   return (
     <>
       <h1 className="page-heading">Interviewers</h1>
@@ -74,7 +83,7 @@ const Interviewers = () => {
         coordination throughout the interview process.
       </p>
 
-      <div className="mt-4 flex flex-col items-end justify-between gap-4 md:flex-row">
+      <div className="my-4 flex flex-col items-end justify-between gap-4 md:flex-row">
         <SearchInput
           value={searchQuery}
           onValueChange={setSearchQuery}
@@ -98,18 +107,27 @@ const Interviewers = () => {
         </DynamicDialog>
       </div>
 
-      <div
-        className={cn(
-          "mt-4 grid items-start gap-4",
-          isSidebarCollapsed
-            ? "lg:grid-cols-3 xl:grid-cols-4"
-            : "md:grid-cols-2 xl:grid-cols-3",
-        )}
-      >
-        {interviewerData?.data.map((interviewer) => (
-          <InterviewerCard interviewer={interviewer} key={interviewer._id} />
-        ))}
-      </div>
+      {interviewers.length > 0 ? (
+        <>
+          <div
+            className={cn(
+              "mt-4 grid items-start gap-4",
+              isSidebarCollapsed
+                ? "lg:grid-cols-3 xl:grid-cols-4"
+                : "md:grid-cols-2 xl:grid-cols-3",
+            )}
+          >
+            {interviewerData?.data.map((interviewer) => (
+              <InterviewerCard
+                interviewer={interviewer}
+                key={interviewer._id}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <NoData item="interviewers" />
+      )}
 
       <DiscardChangesAlert
         open={isDiscarding}

@@ -3,4 +3,5 @@ export const candidateKeys = {
   detail: (id: string) => ["candidates", id],
   eligible: () => ["candidates", "eligible"],
   eligibleWithStatus: (status?: string) => ["candidates", "eligible", status],
+  search: (query: string) => ["candidates", "search", query],
 };

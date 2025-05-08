@@ -73,3 +73,14 @@ export const blacklistCandidate = async (
   const response = await POST(`/candidates/${id}/blacklist`);
   return response;
 };
+
+export const searchCandidates = async (
+  query: string,
+): Promise<MultiCandidateResponse> => {
+  const params = new URLSearchParams();
+
+  if (query) params.set("query", query);
+
+  const response = await GET(`/candidates/search`, params);
+  return response;
+};

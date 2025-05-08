@@ -8,6 +8,7 @@ import {
   getEligibleCandidates,
   hireCandidate,
   rejectCandidate,
+  searchCandidates,
   updateCandidate,
 } from "@/controllers/candidateController";
 import { addCandidateSchema } from "@/lib/schemas/candidateSchemas";
@@ -23,6 +24,7 @@ router.post("/:id/blacklist", blacklistCandidate);
 
 router.get("/", getAllCandidates);
 router.get("/eligible", getEligibleCandidates);
+router.get("/search", searchCandidates);
 router.get("/:id", getCandidateById);
 
 router.patch("/:id", validateData(addCandidateSchema), updateCandidate);

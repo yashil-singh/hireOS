@@ -55,13 +55,12 @@ export function DataTable<TData, TValue>({
   isLoading = false,
 }: DataTableProps<TData, TValue>) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const initialSearch = searchParams.get("search") || initialSearchQuery;
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState<string>(
-    initialSearchQuery ?? "",
-  );
+  const [globalFilter, setGlobalFilter] = useState<string>(initialSearch ?? "");
   const [open, setOpen] = useState(false);
 
   const table = useReactTable({

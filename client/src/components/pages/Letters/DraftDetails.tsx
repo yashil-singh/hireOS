@@ -42,7 +42,7 @@ const DraftDetails = () => {
       </div>
 
       <RichTextEditor
-        content={initialContent}
+        content={initialContent || content}
         onChange={setContent}
         className="no-scrollbar max-h-[60vh] overflow-y-auto"
         editable={false}

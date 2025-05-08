@@ -1,4 +1,3 @@
-import { Candidate } from "@/lib/types";
 import CandidateForm from "./CandidateForm";
 import { candidateSchema } from "@/lib/schemas/candidateSchemas";
 import { z } from "zod";
@@ -10,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { useEditCandidate } from "@/services/candidates/mutations";
+import { Candidate } from "@/services/candidates/type";
 
 const EditCandidateForm = ({ candidate }: { candidate: Candidate }) => {
   const navigate = useNavigate();

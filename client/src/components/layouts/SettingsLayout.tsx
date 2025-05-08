@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/slices/store";
 import { cn } from "@/lib/utils";
 import BackButton from "../shared/BackButton";
-import { FilePen, Footprints, Lock } from "lucide-react";
+import { Footprints } from "lucide-react";
 
 const SettingsLayout = () => {
   const isMobile = useIsMobile();
@@ -41,22 +41,6 @@ const SettingsLayout = () => {
           >
             <Footprints />
             Hrinig Steps
-          </NavLink>
-
-          <NavLink
-            to="/settings/templates"
-            className={({ isActive }) => cn("nav-link", isActive && "active")}
-          >
-            <FilePen />
-            Letter Drafts
-          </NavLink>
-
-          <NavLink
-            to="/settings/change-password"
-            className={({ isActive }) => cn("nav-link", isActive && "active")}
-          >
-            <Lock />
-            Change Password
           </NavLink>
         </div>
       </section>

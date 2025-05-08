@@ -106,7 +106,7 @@ const Signup = () => {
             )}
           />
 
-          <Button className="w-full" disabled={isSubmitting}>
+          <Button className="mt-4 w-full" disabled={isSubmitting}>
             {isSubmitting && <Loader2 className="animate-spin" />}
             {isSubmitting ? "Signing up" : "Signup"}
           </Button>

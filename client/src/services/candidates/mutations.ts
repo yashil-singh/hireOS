@@ -112,11 +112,18 @@ export const useChangeCandidateStatus = () => {
 
 export const useHireCandidate = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: hireCandidate,
     onSuccess: ({ message, data }) => {
-      toast.success(message);
+      toast.success(message, {
+        action: {
+          label: "Send Letter",
+          onClick: () =>
+            navigate(`/letters/send?candidate=${data._id}&type=offer`),
+        },
+      });
       queryClient.invalidateQueries({
         queryKey: candidateKeys.detail(data._id),
       });
