@@ -192,7 +192,7 @@ const HIRING_STEPS: string[] = [
   "Offer Letter",
 ];
 
-const BASE_API_URL = "http://localhost:3000/api";
+const BASE_API_URL = "https://hireos.onrender.com/api";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",
