@@ -91,8 +91,8 @@ export const verifyToken = async (
 export const setCookieToken = (res: Response, token: string) => {
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: true,
+    sameSite: "none",
     maxAge: COOKIE_MAX_AGE,
   });
 };
