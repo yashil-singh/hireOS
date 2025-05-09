@@ -43,6 +43,7 @@ api.interceptors.response.use(
       if (isAuthenticated) {
         toast.error("You have been logged out.");
         store.dispatch(clearUser());
+        window.location.href = "/login";
       }
     }
 
