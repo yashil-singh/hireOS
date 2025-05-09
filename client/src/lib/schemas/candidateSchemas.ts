@@ -9,7 +9,7 @@ export const candidateSchema = z.object({
     .max(20, "Name must be less than 20 characters."),
   phone: z
     .string({ required_error: "Phone number is required." })
-    .min(1, "Phone number is required.")
+    .min(10, "Invalid phone number.")
     .refine((value) => isValidPhoneNumber(value, "NP"), {
       message: "Invalid phone number.",
     }),
@@ -33,10 +33,25 @@ export const candidateSchema = z.object({
           return false;
         }
 
+        if (value < 0) {
+          return false;
+        }
+
         return true;
       },
       {
-        message: "Invalid salary.",
+        message: "Salary cannot be negative. Please enter a valid amount.",
+      },
+    )
+    .refine(
+      (val) => {
+        if (Number(val) > 99999999) return false;
+
+        return true;
+      },
+      {
+        message:
+          "Salary exceeds the allowed limit. Please enter a valid amount.",
       },
     ),
   experience: z

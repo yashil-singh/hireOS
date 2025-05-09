@@ -5,7 +5,7 @@ import EvaluateForm, {
 } from "../forms/Assessment/EvaluateForm";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { evaluateAssessmentSchema } from "@/lib/schemas/assessmentSchemas";
-import AccountAvatar from "./AccountAvatar";
+import AccountAvatar from "../shared/AccountAvatar";
 import { Badge } from "../ui/badge";
 import DynamicDialog from "../dialogs/DynamicDialog";
 import { Button } from "../ui/button";
@@ -15,12 +15,15 @@ import { Assessment } from "@/services/assessments/types";
 import { Link } from "react-router-dom";
 import { useEvaluateAssessment } from "@/services/assessments/mutations";
 
-type EvaluateCardProps = {
+type RemainingEvaluationCardProps = {
   assessment: Assessment;
   candidate: Candidate;
 };
 
-const EvaluateCard = ({ assessment, candidate }: EvaluateCardProps) => {
+const RemainingEvaluationCard = ({
+  assessment,
+  candidate,
+}: RemainingEvaluationCardProps) => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [cancelDialog, setCancelDialog] = useState(false);
 
@@ -116,4 +119,4 @@ const EvaluateCard = ({ assessment, candidate }: EvaluateCardProps) => {
   );
 };
 
-export default EvaluateCard;
+export default RemainingEvaluationCard;

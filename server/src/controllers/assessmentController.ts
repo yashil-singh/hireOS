@@ -47,7 +47,20 @@ export const createAssessment = async (req: Request, res: Response) => {
 };
 
 export const getAllAssessments = async (req: Request, res: Response) => {
-  const assessments = await Assessment.find()
+  const { search } = req.query;
+
+  const query: any = {};
+
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { technologies: { $regex: search, $options: "i" } },
+      { format: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const assessments = await Assessment.find(query)
     .populate({
       path: "assignments",
       populate: [

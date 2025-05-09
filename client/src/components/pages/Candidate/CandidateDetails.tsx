@@ -2,7 +2,6 @@ import AccountAvatar from "@/components/shared/AccountAvatar";
 import BackButton from "@/components/shared/BackButton";
 import CandidateTimeline from "@/components/shared/CandidateTimeline";
 import InfoHeader from "@/components/shared/InfoHeader";
-import ToTopButton from "@/components/shared/ToTopButton";
 import CandidateDetailsSkeleton from "@/components/skeletons/CandidateDetailsSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -65,7 +64,7 @@ import { DEFAULT_DATE_FORMAT, DEFAULT_TIME_FORMAT } from "@/lib/constants";
 import { toast } from "sonner";
 import { useGetCalendarEventsByCandidateId } from "@/services/calendar/queries";
 import { Skeleton } from "@/components/ui/skeleton";
-import CandidateInterviewCard from "@/components/shared/CandidateInterviewCard";
+import CandidateInterviewCard from "@/components/cards/CandidateInterviewCard";
 import { useGetAssessmentsByCandidateId } from "@/services/assessments/queries";
 import Rating from "@/components/shared/Rating";
 import {
@@ -152,7 +151,7 @@ const CandidateDetails = () => {
   if (isPending || isEventsLoading || isAssessmentsLoading)
     return <CandidateDetailsSkeleton />;
 
-  if (!data) return <NotFound label="candidate" />;
+  if (!data) return <NotFound label="Failed to load candidate details." />;
 
   const { data: candidate } = data;
 
@@ -572,8 +571,6 @@ const CandidateDetails = () => {
           )}
         </div>
       </div>
-
-      <ToTopButton />
 
       <AlertDialog open={openHire} onOpenChange={setOpenHire}>
         <AlertDialogContent>

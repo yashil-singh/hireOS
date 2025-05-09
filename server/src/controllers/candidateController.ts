@@ -61,7 +61,22 @@ export const createCandidate = async (req: Request, res: Response) => {
 };
 
 export const getAllCandidates = async (req: Request, res: Response) => {
-  const candidates = await Candidate.find().sort({ createdAt: -1 });
+  const { search } = req.query;
+
+  const query: any = {};
+
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+      { phone: { $regex: search, $options: "i" } },
+      { technology: { $regex: search, $options: "i" } },
+      { level: { $regex: search, $options: "i" } },
+      { status: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const candidates = await Candidate.find(query).sort({ createdAt: -1 });
   successResponse({ res, data: candidates });
 };
 

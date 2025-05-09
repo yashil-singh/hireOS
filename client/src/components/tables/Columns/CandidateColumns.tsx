@@ -15,6 +15,9 @@ import { Link } from "react-router-dom";
 import AccountAvatar from "@/components/shared/AccountAvatar";
 import { differenceInDays } from "date-fns";
 import { Candidate } from "@/services/candidates/type";
+import { candidateStatusColors } from "@/lib/constants";
+import { Badge } from "@/components/ui/badge";
+import { cn, normalizeCandidateStatus } from "@/lib/utils";
 
 export const CandidateColumns: ColumnDef<Candidate>[] = [
   {
@@ -40,20 +43,25 @@ export const CandidateColumns: ColumnDef<Candidate>[] = [
     enableHiding: false,
   },
   {
-    id: "avatar",
-    header: () => <></>,
-    cell: ({ row }) => (
-      <AccountAvatar
-        className="size-8"
-        avatarUrl={row.original.avatarUrl ?? ""}
-      />
-    ),
-  },
-  {
     accessorKey: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Name" />
     ),
+    cell: ({ row }) => {
+      const candidate = row.original;
+      return (
+        <Link
+          to={`/candidates/${candidate._id}`}
+          className="flex items-center space-x-2"
+        >
+          <AccountAvatar
+            className="size-8"
+            avatarUrl={candidate.avatarUrl ?? ""}
+          />
+          <p className="text-sm font-medium">{candidate.name}</p>
+        </Link>
+      );
+    },
   },
   {
     accessorKey: "email",
@@ -113,7 +121,19 @@ export const CandidateColumns: ColumnDef<Candidate>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
     ),
-    cell: ({ row }) => <p className="capitalize">{row.original.status}</p>,
+    cell: ({ row }) => {
+      const normalizedStatus = normalizeCandidateStatus(row.original.status);
+
+      const statusClass =
+        candidateStatusColors[
+          normalizedStatus as keyof typeof candidateStatusColors
+        ];
+      return (
+        <Badge className={cn("capitalize", statusClass)}>
+          {row.original.status}
+        </Badge>
+      );
+    },
   },
   {
     id: "actions",

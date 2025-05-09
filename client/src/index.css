@@ -173,6 +173,9 @@
   .blur-backdrop {
     @apply bg-background supports-[backdrop-filter]:bg-background/60 backdrop-blur;
   }
+  .h-no-header {
+    @apply h-[calc(100vh-80px)];
+  }
   .header-h {
     @apply min-h-20;
   }

@@ -1,5 +1,4 @@
-import { Event } from "@/lib/types";
-import { CalendarEvent } from "../calendar/types";
+import { CalendarEvent, Event } from "../calendar/types";
 import { Candidate } from "../candidates/type";
 
 export type DashboardCounts = {

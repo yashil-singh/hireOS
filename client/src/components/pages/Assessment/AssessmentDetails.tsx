@@ -1,12 +1,9 @@
-import AccountAvatar from "@/components/shared/AccountAvatar";
 import BackButton from "@/components/shared/BackButton";
-import Rating from "@/components/shared/Rating";
-import ToTopButton from "@/components/shared/ToTopButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useGetAssessmentById } from "@/services/assessments/queries";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import NotFound from "../NotFound";
 import AssessmentDetailsSkeleton from "@/components/skeletons/AssessmentDetailsSkeleton";
 import { format } from "date-fns";
@@ -25,38 +22,50 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import {
-  EllipsisVertical,
-  ExternalLink,
-  Eye,
-  Pen,
-  Plus,
-  Trash2,
-} from "lucide-react";
-import EvaluateCard from "@/components/shared/EvaluateCard";
+import { EllipsisVertical, Pen, Plus, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { AssignAssessmentFormValues } from "@/services/assessments/types";
+import {
+  AssessmentFormValues,
+  AssignAssessmentFormValues,
+} from "@/services/assessments/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { assignAssessmentSchema } from "@/lib/schemas/assessmentSchemas";
-import { useState } from "react";
+import {
+  assessmentSchema,
+  assignAssessmentSchema,
+} from "@/lib/schemas/assessmentSchemas";
+import { useEffect, useMemo, useState } from "react";
 import { useAssignAssessment } from "@/services/assessments/mutations";
 import DynamicDialog from "@/components/dialogs/DynamicDialog";
 import AssignAssessmentForm from "@/components/forms/Assessment/AssignAssessmentForm";
 import DiscardChangesAlert from "@/components/dialogs/DiscardChangesAlert";
+import EvaluatedCard from "@/components/cards/EvaluatedCard";
+import RemainingEvaluationCard from "@/components/cards/RemainingEvaluationCard";
+import AssessmentForm from "@/components/forms/Assessment/AssessmentForm";
 
 const AssessmentDetails = () => {
   const { id } = useParams();
 
-  // States related to assign dialog
-  const [isAssigning, setIsAssigning] = useState(false);
-  const [assignCancelDialog, setAssignCancelDialog] = useState(false);
+  const [searchParams] = useSearchParams();
+  const assignParam = useMemo(() => searchParams.get("assign"), [searchParams]);
 
   // Queries
   const { data, isPending, error } = useGetAssessmentById(id!);
-
   // Mutations
   const assignMutation = useAssignAssessment();
 
+  // Forms
+  const editForm = useForm<AssessmentFormValues>({
+    resolver: zodResolver(assessmentSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      technologies: [],
+      assessmentType: "",
+      format: undefined,
+      assessmentFile: undefined,
+      link: "",
+    },
+  });
   const assignForm = useForm<AssignAssessmentFormValues>({
     resolver: zodResolver(assignAssessmentSchema),
     defaultValues: {
@@ -66,9 +75,62 @@ const AssessmentDetails = () => {
     },
   });
 
+  // States related to assign dialog
+  const [isAssigning, setIsAssigning] = useState(false);
+  const [assignCancelDialog, setAssignCancelDialog] = useState(false);
+
+  // States related to edit dialog
+  const [isEditing, setIsEditing] = useState(false);
+  const [editCancelDialog, setEditCancelDialog] = useState(false);
+
+  const onAssignDialogOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      setAssignCancelDialog(true);
+      return;
+    }
+
+    setIsAssigning(isOpen);
+    assignForm.reset();
+  };
+  const onEditDialogOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      if (editForm.formState.isDirty) {
+        setEditCancelDialog(true);
+        return;
+      }
+    }
+
+    setIsEditing(isOpen);
+    editForm.reset();
+  };
+
+  const onAssign = async (values: AssignAssessmentFormValues) => {
+    await assignMutation.mutateAsync(
+      {
+        id: id!,
+        data: values,
+      },
+      {
+        onSuccess: () => {
+          assignForm.reset();
+          setIsAssigning(false);
+        },
+      },
+    );
+  };
+  const onEdit = async (values: AssessmentFormValues) => {
+    console.log("🚀 ~ AssessmentCard.tsx:80 ~ values:", values);
+  };
+
+  useEffect(() => {
+    if (assignParam) {
+      setIsAssigning(true);
+    }
+  }, [assignParam]);
+
   if (isPending) return <AssessmentDetailsSkeleton />;
 
-  if (!data || error) return <NotFound label="assessment" />;
+  if (error) return <NotFound label="Failed to load assessments." />;
 
   const assessment = data.data;
   const {
@@ -86,33 +148,8 @@ const AssessmentDetails = () => {
   const pending = assignments.filter((a) => a.status === "pending");
   const evaluated = assignments.filter((a) => a.status === "evaluated");
 
-  const onAssign = async (values: AssignAssessmentFormValues) => {
-    await assignMutation.mutateAsync(
-      {
-        id: id!,
-        data: values,
-      },
-      {
-        onSuccess: () => {
-          assignForm.reset();
-          setIsAssigning(false);
-        },
-      },
-    );
-  };
-
-  const onAssignDialogOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      setAssignCancelDialog(true);
-      return;
-    }
-
-    setIsAssigning(isOpen);
-    assignForm.reset();
-  };
-
   return (
-    <div className="relative space-y-4">
+    <div className="space-y-4">
       <BackButton />
 
       <div>
@@ -138,7 +175,20 @@ const AssessmentDetails = () => {
 
             <DropdownMenuContent align="end">
               <DropdownMenuGroup>
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setIsEditing(true);
+                    editForm.reset({
+                      title: assessment.title,
+                      description: assessment.description,
+                      technologies: assessment.technologies,
+                      assessmentType: assessment.assessmentType,
+                      format: assessment.format,
+                      assessmentFile: assessment.format,
+                      link: assessment.link,
+                    });
+                  }}
+                >
                   <Pen /> Edit
                 </DropdownMenuItem>
               </DropdownMenuGroup>
@@ -225,7 +275,7 @@ You must select at least one candidate before proceeding."
             </h2>
             {pending.length > 0 ? (
               pending.map((assignment) => (
-                <EvaluateCard
+                <RemainingEvaluationCard
                   assessment={assessment}
                   key={assignment._id}
                   candidate={assignment.candidate}
@@ -249,61 +299,12 @@ You must select at least one candidate before proceeding."
 
             <div className="space-y-4">
               {evaluated.length > 0 ? (
-                evaluated.map((assignment) => {
-                  const { _id, candidate, remarks, rating } = assignment;
-                  return (
-                    <div
-                      className="bg-card space-y-4 rounded-xl border p-4"
-                      key={`evaluated-${_id}-candidate-${candidate._id}`}
-                    >
-                      <Link
-                        to={`/candidates/${candidate._id}`}
-                        className="flex items-center gap-4"
-                      >
-                        <AccountAvatar avatarUrl={candidate.avatarUrl} />
-                        <div className="flex flex-col">
-                          <b>
-                            {candidate.name} • {candidate.level}
-                          </b>
-                          <span>{candidate.email}</span>
-                        </div>
-                      </Link>
-
-                      <div className="flex gap-2">
-                        {candidate.technology.map((tech) => (
-                          <Badge
-                            key={`evaluated-${_id}-candidate-${candidate._id}-${tech}`}
-                          >
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <p>{remarks}</p>
-
-                      <div className="flex items-center justify-between gap-4">
-                        <Rating
-                          value={rating!}
-                          onChange={() => {}}
-                          starSize={20}
-                          labelClassName="text-3xl"
-                          disabled
-                        />
-
-                        {assessment.format === "file" && (
-                          <Button>
-                            <Eye /> View File
-                          </Button>
-                        )}
-                        {assessment.format === "link" && (
-                          <Button>
-                            <ExternalLink /> Visit
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })
+                evaluated.map((assignment) => (
+                  <EvaluatedCard
+                    assessment={assessment}
+                    assignment={assignment}
+                  />
+                ))
               ) : (
                 <p className="text-muted-foreground text-center">
                   No evaluations made yet.
@@ -316,7 +317,24 @@ You must select at least one candidate before proceeding."
         <NoData item="assigned candidates" className="mt-4" />
       )}
 
-      <ToTopButton />
+      <DynamicDialog
+        title="Edit assessment"
+        description="Create and upload assessment materials and assign them to selected candidates. You can include optional notes and set a deadline."
+        open={isEditing}
+        onOpenChange={onEditDialogOpenChange}
+        trigger={<button className="sr-only">Edit</button>}
+      >
+        <AssessmentForm form={editForm} onSubmit={onEdit} />
+      </DynamicDialog>
+
+      <DiscardChangesAlert
+        open={editCancelDialog}
+        onOpenChange={setEditCancelDialog}
+        onConfirm={() => {
+          setIsEditing(false);
+          editForm.reset();
+        }}
+      />
 
       <DiscardChangesAlert
         open={assignCancelDialog}

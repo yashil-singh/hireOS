@@ -2,7 +2,6 @@ import {
   Laptop,
   LogOut,
   Moon,
-  Pen,
   Settings,
   Sidebar,
   Sun,
@@ -114,12 +113,6 @@ const Header = () => {
               </div>
 
               <DropdownMenuSeparator />
-
-              <DropdownMenuItem asChild>
-                <Link to="/edit-profile">
-                  <Pen className="size-5" /> Edit Profile
-                </Link>
-              </DropdownMenuItem>
 
               <DropdownMenuItem asChild>
                 <Link to="/settings">

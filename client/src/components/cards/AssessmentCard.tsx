@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import AccountAvatar from "./AccountAvatar";
+import AccountAvatar from "../shared/AccountAvatar";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
 import {
@@ -15,7 +15,6 @@ import {
   EllipsisVertical,
   Info,
   LinkIcon,
-  Pen,
   RotateCcw,
   Trash2,
 } from "lucide-react";
@@ -30,12 +29,8 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-  assessmentSchema,
-  assignAssessmentSchema,
-} from "@/lib/schemas/assessmentSchemas";
+import { assignAssessmentSchema } from "@/lib/schemas/assessmentSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import AssessmentForm from "../forms/Assessment/AssessmentForm";
 import DiscardChangesAlert from "../dialogs/DiscardChangesAlert";
 import DynamicDialog from "../dialogs/DynamicDialog";
 import { Link } from "react-router-dom";
@@ -43,7 +38,6 @@ import AssignAssessmentForm from "../forms/Assessment/AssignAssessmentForm";
 import { Badge } from "../ui/badge";
 import {
   Assessment,
-  AssessmentFormValues,
   AssignAssessmentFormValues,
 } from "@/services/assessments/types";
 import { DEFAULT_DATE_FORMAT } from "@/lib/constants";
@@ -57,29 +51,12 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
   const totalNumber = assignments.length;
   const remaining = totalNumber - maxAvatars;
 
-  // States related to edit dialog
-  const [isEditing, setIsEditing] = useState(false);
-  const [editCancelDialog, setEditCancelDialog] = useState(false);
-
   // States related to assign dialog
   const [isAssigning, setIsAssigning] = useState(false);
   const [assignCancelDialog, setAssignCancelDialog] = useState(false);
 
   // Mutations
   const assignMutation = useAssignAssessment();
-
-  const editForm = useForm<AssessmentFormValues>({
-    resolver: zodResolver(assessmentSchema),
-    defaultValues: {
-      title: assessment.title,
-      description: assessment.description,
-      technologies: assessment.technologies,
-      assessmentType: assessment.assessmentType,
-      format: assessment.format,
-      assessmentFile: undefined,
-      link: assessment.link,
-    },
-  });
 
   const assignForm = useForm<AssignAssessmentFormValues>({
     resolver: zodResolver(assignAssessmentSchema),
@@ -90,18 +67,6 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
     },
   });
 
-  function onEditDialogOpenChange(isOpen: boolean) {
-    if (!isOpen) {
-      if (editForm.formState.isDirty) {
-        setEditCancelDialog(true);
-        return;
-      }
-    }
-
-    setIsEditing(isOpen);
-    editForm.reset();
-  }
-
   const onAssignDialogOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setAssignCancelDialog(true);
@@ -110,10 +75,6 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
 
     setIsAssigning(isOpen);
     assignForm.reset();
-  };
-
-  const onEdit = async (values: AssessmentFormValues) => {
-    console.log("🚀 ~ AssessmentCard.tsx:80 ~ values:", values);
   };
 
   const onAssign = async (values: AssignAssessmentFormValues) => {
@@ -159,9 +120,6 @@ const AssessmentCard = ({ assessment }: { assessment: Assessment }) => {
 
               <DropdownMenuContent align="end">
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
-                    <Pen /> Edit
-                  </DropdownMenuItem>
                   {assessment.format === "file" ? (
                     <DropdownMenuItem>
                       <Download /> Download
@@ -250,25 +208,6 @@ You must select at least one candidate before proceeding."
           </Button>
         </CardFooter>
       </Card>
-
-      <DynamicDialog
-        title="Edit assessment"
-        description="Create and upload assessment materials and assign them to selected candidates. You can include optional notes and set a deadline."
-        open={isEditing}
-        onOpenChange={onEditDialogOpenChange}
-        trigger={<button className="sr-only">Edit</button>}
-      >
-        <AssessmentForm form={editForm} onSubmit={onEdit} />
-      </DynamicDialog>
-
-      <DiscardChangesAlert
-        open={editCancelDialog}
-        onOpenChange={setEditCancelDialog}
-        onConfirm={() => {
-          setIsEditing(false);
-          editForm.reset();
-        }}
-      />
 
       <DiscardChangesAlert
         open={assignCancelDialog}

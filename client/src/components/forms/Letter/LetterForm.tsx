@@ -155,7 +155,9 @@ const LetterForm = ({
           name="candidateId"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Candidate</FormLabel>
+              <FormLabel>
+                Candidate<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Combobox
                   options={buildCandidateOptions()}
@@ -227,7 +229,9 @@ const LetterForm = ({
           name="content"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Content</FormLabel>
+              <FormLabel>
+                Content<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <RichTextEditor
                   isError={!!fieldState.error}

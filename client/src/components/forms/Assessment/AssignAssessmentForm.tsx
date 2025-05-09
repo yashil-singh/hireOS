@@ -170,6 +170,7 @@ const AssignAssessmentForm = ({
               />
             </>
           )}
+
           {step === 2 && (
             <div className="space-y-4">
               <FormField
@@ -177,7 +178,9 @@ const AssignAssessmentForm = ({
                 name="deadlineDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Deadline Date</FormLabel>
+                    <FormLabel>
+                      Deadline Date<span className="text-destructive">*</span>
+                    </FormLabel>
                     <FormControl>
                       <DatePicker
                         date={field.value}
@@ -196,7 +199,9 @@ const AssignAssessmentForm = ({
                 name="deadlineTime"
                 render={({ field }) => (
                   <FormItem className="w-full">
-                    <FormLabel>Deadline Time</FormLabel>
+                    <FormLabel>
+                      Deadline Time<span className="text-destructive">*</span>
+                    </FormLabel>
                     <FormControl>
                       <TimePicker
                         time={field.value}

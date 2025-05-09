@@ -1,5 +1,8 @@
 import { BASE_API_URL } from "@/lib/constants";
+import { clearUser } from "@/lib/slices/session/sessionSlice";
 import axios from "axios";
+import { toast } from "sonner";
+import { store } from "@/lib/slices/store";
 
 // Axios instance
 const api = axios.create({
@@ -34,6 +37,15 @@ export const DELETE = async (endpoint: string = "") => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
+    if (err.response?.status === 401 && err.config?.url?.endsWith("/auth/me")) {
+      const isAuthenticated = store.getState().session.isAuthenticated;
+
+      if (isAuthenticated) {
+        toast.error("You have been logged out.");
+        store.dispatch(clearUser());
+      }
+    }
+
     const message =
       err.response?.data?.message || err.message || "Something went wrong";
     return Promise.reject({

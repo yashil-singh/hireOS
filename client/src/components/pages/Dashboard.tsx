@@ -18,14 +18,14 @@ import {
   X,
 } from "lucide-react";
 import AccountAvatar from "../shared/AccountAvatar";
-import DataCard from "../shared/DataCard";
+import DataCard from "../cards/DataCard";
 import { Button } from "../ui/button";
 import Barchart from "../charts/barchart";
 import BarchartHorizontal from "../charts/barchart-horizontal";
-import DashboardCard from "../shared/DashboardCard";
 import RadialchartStacked from "../charts/radialchart-stacked";
-import { Link } from "react-router-dom";
 import BarchartHorizontalStacked from "../charts/barchart-horizontal-stacked";
+import DashboardCard from "../cards/DashboardCard";
+import { Link } from "react-router-dom";
 import { useGetDashboardData } from "@/services/dashboard/queries";
 import NotFound from "./NotFound";
 import DashboardSkeleton from "../skeletons/DashboardSkeleton";
@@ -51,7 +51,8 @@ const Dashboard = () => {
 
   if (isPending) return <DashboardSkeleton />;
 
-  if (!data || error) return <NotFound />;
+  if (!data || error)
+    return <NotFound label="Failed to load dashboard data." />;
 
   const {
     counts,
@@ -152,8 +153,8 @@ const Dashboard = () => {
                     </div>
                   </span>
 
-                  <Button size="sm">
-                    <Link to={`/calendar/event/${interview._id}`}>View</Link>
+                  <Button variant="outline" size="sm">
+                    <Link to={`/interviews/${interview._id}`}>View</Link>
                   </Button>
                 </div>
               );

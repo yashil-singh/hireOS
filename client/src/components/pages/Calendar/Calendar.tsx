@@ -4,7 +4,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { useCallback, useEffect, useState } from "react";
 import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
-import { Bell, CalendarIcon, Clock, Info } from "lucide-react";
+import { Bell, CalendarIcon, Clock, Eye, Info } from "lucide-react";
 import { Button } from "../../ui/button";
 import { Link, useSearchParams } from "react-router-dom";
 import ScheduleInterviewForm from "../../forms/Calendar/ScheduleInterviewForm";
@@ -123,12 +123,23 @@ const Calendar = () => {
 
   if (isLoading) return <CalendarSkeleton />;
 
-  if (!data) return <NotFound label="events" />;
+  if (!data) return <NotFound label="Failed to load calendar." />;
 
   return (
     <>
-      <h1 className="page-heading">Interviews</h1>
-      <p className="page-description">Schedule interviews and set reminders.</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="page-heading">Interviews</h1>
+          <p className="page-description">
+            Schedule interviews and send reminders.
+          </p>
+        </div>
+        <Button variant="outline" className="ml-auto w-fit" asChild>
+          <Link to="/interviews">
+            <Eye /> View All
+          </Link>
+        </Button>
+      </div>
 
       <div className="mt-4 grid w-full gap-4 xl:grid-cols-3">
         <Card className="no-scrollbar h-full overflow-y-auto xl:col-span-2">
@@ -185,7 +196,7 @@ const Calendar = () => {
           <CardContent>
             {filteredEvents.length > 0 ? (
               <ul className="space-y-4">
-                {filteredEvents.map((event) => {
+                {[...filteredEvents].reverse().map((event) => {
                   const today = new Date();
                   const isPassed = new Date(event.end) < today;
 
@@ -209,19 +220,17 @@ const Calendar = () => {
                       </span>
 
                       <div className="flex flex-col items-center gap-2 md:ml-auto md:flex-row">
-                        <Button
-                          variant="ghost"
-                          className="max-md:w-full"
-                          disabled={isPassed}
-                        >
-                          <Bell /> Send Reminder
-                        </Button>
+                        {!isPassed && (
+                          <Button className="max-md:w-full" disabled={isPassed}>
+                            <Bell /> Send Reminder
+                          </Button>
+                        )}
                         <Button
                           variant="outline"
                           className="max-md:w-full"
                           asChild
                         >
-                          <Link to={`/calendar/event/${event._id}`}>
+                          <Link to={`/interviews/${event._id}`}>
                             <Info /> Details
                           </Link>
                         </Button>

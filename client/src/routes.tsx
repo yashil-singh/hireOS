@@ -20,9 +20,10 @@ import Drafts from "./components/pages/Letters/Drafts";
 import SettingsLayout from "./components/layouts/SettingsLayout";
 import HiringProcess from "./components/pages/Settings/HiringProcess";
 import Calendar from "./components/pages/Calendar/Calendar";
-import EventDetails from "./components/pages/Calendar/EventDetails";
 import Interviewers from "./components/pages/Calendar/Interviewers";
 import CreateDraft from "./components/pages/Letters/CreateDraft";
+import Interviews from "./components/pages/Calendar/Interviews";
+import InterviewDetails from "./components/pages/Calendar/InterviewDetails";
 
 const router = createBrowserRouter([
   {
@@ -105,9 +106,18 @@ const router = createBrowserRouter([
             index: true,
             element: <Calendar />,
           },
+        ],
+      },
+      {
+        path: "/interviews",
+        children: [
           {
-            path: "event/:id",
-            element: <EventDetails />,
+            index: true,
+            element: <Interviews />,
+          },
+          {
+            path: ":id",
+            element: <InterviewDetails />,
           },
         ],
       },

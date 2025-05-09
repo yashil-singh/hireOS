@@ -7,8 +7,10 @@ import {
 
 const BASE = "/letters";
 
-export const getAllLetters = async (): Promise<MultiLetterResponse> => {
-  const response = await GET(BASE);
+export const getAllLetters = async (
+  params?: URLSearchParams,
+): Promise<MultiLetterResponse> => {
+  const response = await GET(BASE, params);
   return response;
 };
 

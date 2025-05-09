@@ -16,8 +16,7 @@ export const seedHiringSteps = async () => {
       { title: "second-interview", step: 3 },
       { title: "third-interview", step: 4, optional: true },
       { title: "assessment", step: 5 },
-      { title: "background-check", step: 6 },
-      { title: "offer", step: 7 },
+      { title: "offer", step: 6 },
     ]);
     console.log("✅ Default hiring steps seeded.");
   } else {

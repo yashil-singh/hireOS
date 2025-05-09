@@ -10,8 +10,10 @@ import {
 
 const BASE = "/letters/drafts";
 
-export const getAllDrafts = async (): Promise<MultiDraftResponse> => {
-  const response = await GET(BASE);
+export const getAllDrafts = async (
+  params?: URLSearchParams,
+): Promise<MultiDraftResponse> => {
+  const response = await GET(BASE, params);
   return response;
 };
 

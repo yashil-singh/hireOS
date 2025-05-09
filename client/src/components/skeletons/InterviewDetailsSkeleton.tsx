@@ -1,6 +1,6 @@
 import { Skeleton } from "../ui/skeleton";
 
-const EventDetailsSkeleton = () => {
+const InterviewDetailsSkeleton = () => {
   return (
     <div className="space-y-8">
       <div className="space-y-4">
@@ -39,4 +39,4 @@ const EventDetailsSkeleton = () => {
   );
 };
 
-export default EventDetailsSkeleton;
+export default InterviewDetailsSkeleton;

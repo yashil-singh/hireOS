@@ -20,7 +20,7 @@ const DraftDetails = () => {
   const [content, setContent] = useState("");
 
   if (isPending) return <LetterSkeleton />;
-  if (!data) return <NotFound label="draft" />;
+  if (!data) return <NotFound label="Failed to load draft details." />;
 
   const { _id, title, content: initialContent, createdAt } = data.data;
 

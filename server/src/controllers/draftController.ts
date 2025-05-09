@@ -67,7 +67,18 @@ export const deleteDraft = async (req: Request, res: Response) => {
 };
 
 export const getAllDrafts = async (req: Request, res: Response) => {
-  const drafts = await Draft.find()
+  const { search } = req.query;
+
+  const query: any = {};
+
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { type: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const drafts = await Draft.find(query)
     .populate("variables")
     .sort({ createdAt: -1 });
   successResponse({ res, data: drafts });

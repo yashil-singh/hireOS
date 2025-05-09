@@ -23,7 +23,8 @@ const LetterDetails = () => {
 
   if (isPending) return <LetterSkeleton />;
 
-  if (!data || error) return <NotFound label="letter" />;
+  if (!data || error)
+    return <NotFound label="Failed to load letter details." />;
 
   const { candidate, content, draft, createdAt } = data.data;
 

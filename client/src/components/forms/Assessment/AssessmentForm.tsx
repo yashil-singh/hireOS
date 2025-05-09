@@ -43,7 +43,9 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Assessment Title</FormLabel>
+              <FormLabel>
+                Assessment Title<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter assessment title" {...field} />
               </FormControl>
@@ -58,7 +60,9 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
           name="technologies"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel>Related Technologies</FormLabel>
+              <FormLabel>
+                Related Technologies<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <MultiSelect
                   className="h-12"
@@ -82,7 +86,9 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
           name="assessmentType"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Assessment Type</FormLabel>
+              <FormLabel>
+                Assessment Type<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -118,7 +124,9 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
           name="format"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Assessment Format</FormLabel>
+              <FormLabel>
+                Assessment Format<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Select
                   onValueChange={field.onChange}
@@ -149,7 +157,9 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
             name="assessmentFile"
             render={({ field }) => (
               <FormItem className="lg:col-span-2 xl:col-span-3">
-                <FormLabel>File</FormLabel>
+                <FormLabel>
+                  File<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Dropzone
                     onChange={field.onChange}
@@ -170,7 +180,9 @@ const AssessmentForm = ({ form, onSubmit, className }: AssessmentFormProps) => {
             name="link"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Link</FormLabel>
+                <FormLabel>
+                  Link<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter assessment link" {...field} />
                 </FormControl>

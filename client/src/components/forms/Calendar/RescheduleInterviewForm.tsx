@@ -40,7 +40,9 @@ const RescheduleInterviewForm = ({
           name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date</FormLabel>
+              <FormLabel>
+                Date<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <DatePicker
                   date={field.value}
@@ -61,7 +63,9 @@ const RescheduleInterviewForm = ({
             name="startTime"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>
+                  Start Time<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <TimePicker
                     time={field.value}
@@ -80,7 +84,9 @@ const RescheduleInterviewForm = ({
             name="endTime"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>End Time</FormLabel>
+                <FormLabel>
+                  End Time<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <TimePicker
                     time={field.value}

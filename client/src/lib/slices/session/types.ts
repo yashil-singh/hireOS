@@ -8,4 +8,5 @@ export type User = {
 export type SessionState = {
   user: User | null;
   loading: boolean;
+  isAuthenticated: boolean;
 };

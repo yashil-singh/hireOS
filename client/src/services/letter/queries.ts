@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllLetters, getLetterById } from ".";
 import { letterKeys } from "./keys";
 
-export const useGetAllLetters = () => {
+export const useGetAllLetters = (params?: Record<string, string>) => {
+  const searchParams = new URLSearchParams(params || {});
+
   return useQuery({
-    queryFn: getAllLetters,
-    queryKey: letterKeys.all(),
+    queryFn: () => getAllLetters(searchParams),
+    queryKey: letterKeys.all(searchParams),
   });
 };
 

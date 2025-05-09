@@ -1,3 +1,9 @@
+import { candidateSchema } from "@/lib/schemas/candidateSchemas";
+import { Timestamps } from "@/lib/types";
+import { z } from "zod";
+
+export type CandidateFormValues = z.infer<typeof candidateSchema>;
+
 export type Experience = {
   jobTitle: string;
   company: string;
@@ -6,7 +12,7 @@ export type Experience = {
   duration: number;
 };
 
-export type Candidate = {
+export interface Candidate extends Timestamps {
   _id: string;
   name: string;
   phone: string;
@@ -19,7 +25,7 @@ export type Candidate = {
   salaryExpectation: string;
   status: string;
   resumeUrl: string;
-};
+}
 
 export type CandidatePreview = Pick<
   Candidate,

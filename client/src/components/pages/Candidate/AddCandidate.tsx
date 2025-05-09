@@ -44,23 +44,21 @@ const AddCandidate = () => {
 
   return (
     <>
-      <div className="flex items-start gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            if (isDirty) {
-              setDiscardOpen(true);
-            } else {
-              navigate(-1);
-            }
-          }}
-        >
-          <ArrowLeft />
-        </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => {
+          if (isDirty) {
+            setDiscardOpen(true);
+          } else {
+            navigate(-1);
+          }
+        }}
+      >
+        <ArrowLeft />
+      </Button>
 
-        <h1 className="page-heading">Add Candidate</h1>
-      </div>
+      <h1 className="page-heading mt-4">Add Candidate</h1>
       <p className="page-description">
         This information will be used for screening, interview scheduling, and
         further recruitment steps. Make sure to fill in all relevant fields

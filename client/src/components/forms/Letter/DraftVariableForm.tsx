@@ -40,7 +40,9 @@ const DraftVariableForm = ({
           name="label"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Label</FormLabel>
+              <FormLabel>
+                Label<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter variable label" {...field} />
               </FormControl>
@@ -55,7 +57,9 @@ const DraftVariableForm = ({
           name="key"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Key</FormLabel>
+              <FormLabel>
+                Key<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter variable label" {...field} />
               </FormControl>

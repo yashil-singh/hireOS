@@ -44,13 +44,18 @@ export const useRescheduleInterview = () => {
   });
 };
 
-export const useMarkInterviewAsCompleted = (id: string) => {
+export const useMarkInterviewAsCompleted = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => markInterviewAsCompleted(id),
-    onSuccess: ({ message }) => {
+    mutationFn: markInterviewAsCompleted,
+    onSuccess: ({ message, data }) => {
       toast.success(message);
-      queryClient.invalidateQueries({ queryKey: calendarKeys.detail(id) });
+      queryClient.invalidateQueries({
+        queryKey: calendarKeys.detail(data._id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: eventKeys.candidate(data.candidate._id),
+      });
     },
     onError: ({ message }) => toast.error(message),
   });

@@ -87,7 +87,9 @@ const EvaluateForm = ({ form, onSubmit, className }: EvaluateFromProps) => {
           name="interviewerId"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel>Evaluator</FormLabel>
+              <FormLabel>
+                Evaluator<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Combobox
                   placeholder="Select Evaluator"
@@ -109,7 +111,9 @@ const EvaluateForm = ({ form, onSubmit, className }: EvaluateFromProps) => {
           name="rating"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Rating</FormLabel>
+              <FormLabel>
+                Rating<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Rating
                   value={field.value}

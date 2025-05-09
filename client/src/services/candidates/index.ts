@@ -7,8 +7,10 @@ import {
 } from "./type";
 import { candidateSchema } from "@/lib/schemas/candidateSchemas";
 
-export const getAllCandidates = async (): Promise<MultiCandidateResponse> => {
-  const response = await GET("/candidates");
+export const getAllCandidates = async (
+  params?: URLSearchParams,
+): Promise<MultiCandidateResponse> => {
+  const response = await GET("/candidates", params);
   return response;
 };
 

@@ -16,8 +16,9 @@ import { z } from "zod";
 import { interviwerSchema } from "@/lib/schemas/calendarSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DiscardChangesAlert from "../dialogs/DiscardChangesAlert";
-import AccountAvatar from "./AccountAvatar";
+import AccountAvatar from "../shared/AccountAvatar";
 import DeleteAlert from "../dialogs/DeleteAlert";
+import { useEditInterviewer } from "@/services/interviewer/mutations";
 
 type InterviewerCardProps = {
   interviewer: Interviewer;
@@ -28,6 +29,9 @@ const InterviewerCard = ({ interviewer }: InterviewerCardProps) => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isDiscarding, setIsDiscarding] = useState(false);
+
+  // Mutations
+  const editInterviewerMutation = useEditInterviewer();
 
   const form = useForm<z.infer<typeof interviwerSchema>>({
     defaultValues: {
@@ -53,7 +57,19 @@ const InterviewerCard = ({ interviewer }: InterviewerCardProps) => {
   };
 
   const onEdit = async (values: z.infer<typeof interviwerSchema>) => {
-    console.log("🚀 ~ InterviewerCard.tsx:60 ~ values:", values);
+    await editInterviewerMutation.mutateAsync(
+      { id: interviewer._id, values },
+      {
+        onSuccess: ({ data }) => {
+          form.reset({
+            name: data.name,
+            email: data.email,
+            phone: data.phone,
+          });
+          setIsEditing(false);
+        },
+      },
+    );
   };
 
   return (
@@ -98,7 +114,7 @@ const InterviewerCard = ({ interviewer }: InterviewerCardProps) => {
             open={isEditing}
             onOpenChange={onOpenChange}
             trigger={
-              <Button>
+              <Button variant="outline">
                 <Pen /> Edit
               </Button>
             }

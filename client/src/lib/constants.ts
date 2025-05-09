@@ -8,9 +8,7 @@ import NoDataImage from "@/assets/images/empty.svg";
 
 import { NavLink, SelectOption } from "./types";
 import {
-  CalendarClock,
   CalendarDays,
-  Crown,
   FilePen,
   FileText,
   FileUser,
@@ -18,9 +16,9 @@ import {
   ListChecks,
   Send,
   Settings,
+  Speech,
   Upload,
   Users,
-  X,
 } from "lucide-react";
 
 const NavLinks: NavLink[] = [
@@ -50,9 +48,9 @@ const NavLinks: NavLink[] = [
     hasChild: true,
     children: [
       {
-        title: "Schedule Interview",
-        to: "/calendar?schedule=true",
-        Icon: CalendarClock,
+        title: "Interviews",
+        to: "/interviews",
+        Icon: Speech,
       },
       {
         title: "Interviewers",
@@ -77,16 +75,6 @@ const NavLinks: NavLink[] = [
         title: "Send Letter",
         to: "/letters/send",
         Icon: Send,
-      },
-      {
-        title: "Offer Letter",
-        to: "/letters/send?type=offer",
-        Icon: Crown,
-      },
-      {
-        title: "Rejection Letter",
-        to: "/letters/send?type=rejection",
-        Icon: X,
       },
       {
         title: "Drafts",
@@ -192,7 +180,34 @@ const HIRING_STEPS: string[] = [
   "Offer Letter",
 ];
 
+export const interviewStatusColor = {
+  scheduled:
+    "text-amber-500 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500",
+  completed:
+    "text-green-500 bg-green-500/10 dark:bg-green-500/20 border border-green-500",
+  rescheduled:
+    "text-amber-500 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500",
+  cancelled:
+    "text-destructive bg-destructive/10 dark:bg-destructive/20 border border-destructive",
+};
+
+export const candidateStatusColors = {
+  shortlisted:
+    "text-blue-500 bg-blue-500/10 dark:bg-blue-500/20 border border-blue-500",
+  interview:
+    "text-purple-500 bg-purple-500/10 dark:bg-purple-500/20 border border-purple-500",
+  assessment:
+    "text-amber-500 bg-amber-500/10 dark:bg-amber-500/20 border border-amber-500",
+  offer:
+    "text-emerald-500 bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500",
+  rejected:
+    "text-destructive bg-destructive/10 dark:bg-destructive/20 border border-destructive",
+  hired:
+    "text-green-500 bg-green-500/10 dark:bg-green-500/20 border border-green-500",
+};
+
 const BASE_API_URL = "https://hireos.onrender.com/api";
+// const BASE_API_URL = "http://localhost:3000/api";
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",

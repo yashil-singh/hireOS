@@ -19,49 +19,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DataTablePagination } from "@/components/tables/DataTablePagination";
-import { DataTableViewOptions } from "@/components/tables/DataTableViewOptions";
-import { Loader2, Plus } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import DynamicDialog from "../dialogs/DynamicDialog";
-import SearchInput from "../shared/SearchInput";
-import { useSearchParams } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
+  searchQuery?: string;
+  setSearchQuery?: (query: string) => void;
   topChildren?: React.ReactNode;
   columns: ColumnDef<TData, TValue>[];
   data: TData[] | undefined;
-  searchableColumns?: string[];
+  searchableColumns?: (
+    | Extract<keyof TData, string>
+    | `${Extract<keyof TData, string>}.${string}`
+  )[];
   addDataForm?: React.ReactNode;
-  addDataTitle: string;
-  addDataDescription: string;
+  addDataTitle?: string;
+  addDataDescription?: string;
   searchPlaceholder?: string;
-  initialSearchQuery?: string;
   isLoading?: boolean;
 }
 
 export function DataTable<TData, TValue>({
-  topChildren,
+  searchQuery,
+  setSearchQuery,
   columns,
   data,
   searchableColumns,
-  addDataForm,
-  addDataTitle,
-  addDataDescription,
-  searchPlaceholder,
-  initialSearchQuery,
   isLoading = false,
 }: DataTableProps<TData, TValue>) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialSearch = searchParams.get("search") || initialSearchQuery;
-
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [globalFilter, setGlobalFilter] = useState<string>(initialSearch ?? "");
-  const [open, setOpen] = useState(false);
 
   const table = useReactTable({
     data: data ?? [],
@@ -77,9 +66,9 @@ export function DataTable<TData, TValue>({
       sorting,
       columnVisibility,
       rowSelection,
-      globalFilter,
+      globalFilter: searchQuery,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: setSearchQuery,
     globalFilterFn: (row: Row<TData>, _, filterValue: string) => {
       const value = filterValue.toLowerCase();
 
@@ -113,52 +102,8 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="mt-4 space-y-4">
-      {/* Filters */}
-      <div className="flex flex-col gap-2 md:flex-row md:items-end">
-        {searchableColumns && searchableColumns.length > 0 && (
-          <div className="w-full space-y-2">
-            <SearchInput
-              placeholder="Search..."
-              value={globalFilter}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="w-full max-w-[500px]"
-              onClear={() => {
-                setGlobalFilter("");
-                setSearchParams({});
-              }}
-            />
-            {searchPlaceholder && (
-              <Label className="text-muted-foreground text-xs">
-                {searchPlaceholder}
-              </Label>
-            )}
-          </div>
-        )}
-
-        <div className="flex gap-2 md:ml-auto">
-          {addDataForm && (
-            <DynamicDialog
-              title={addDataTitle}
-              description={addDataDescription}
-              trigger={
-                <Button>
-                  <Plus /> Add
-                </Button>
-              }
-              open={open}
-              onOpenChange={setOpen}
-            >
-              {addDataForm}
-            </DynamicDialog>
-          )}
-          {topChildren}
-          <DataTableViewOptions table={table} />
-        </div>
-      </div>
-
-      {/* Table */}
-      <div className="overflow-hidden rounded-xl border">
+    <div className="space-y-4">
+      <div className="flex-1 overflow-x-hidden rounded-xl border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -217,7 +162,6 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-
       <DataTablePagination table={table} />
     </div>
   );

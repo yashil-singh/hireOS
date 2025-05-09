@@ -1,3 +1,8 @@
+import { interviwerSchema } from "@/lib/schemas/calendarSchemas";
+import { z } from "zod";
+
+export type InterviewerFormValues = z.infer<typeof interviwerSchema>;
+
 export type Interviewer = {
   _id: string;
   name: string;
@@ -11,7 +16,12 @@ export type MutateInterviewerResponse = {
   data: Interviewer;
 };
 
-export type GetInterviewersResponse = {
+export type MultiInterviewerResponse = {
   message: string;
   data: Interviewer[];
+};
+
+export type SingleInterviewerResponse = {
+  message: string;
+  data: Interviewer;
 };

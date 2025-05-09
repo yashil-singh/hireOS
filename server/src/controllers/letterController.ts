@@ -27,7 +27,6 @@ export const sendLetter = async (req: Request, res: Response) => {
 
   const currentStepTitle = currentEvent.title.toLowerCase();
 
-  console.log("🚀 ~ letterController.ts:33 ~ letterType:", letterType);
   switch (letterType) {
     case "offer":
       if (currentStepTitle.includes("offer")) {
@@ -38,7 +37,10 @@ export const sendLetter = async (req: Request, res: Response) => {
           }.`,
         } as any);
         currentEvent.status = "completed";
-      } else return throwError("Candidate not in the offer stage.");
+      } else
+        return throwError(
+          "Candidate not in the offer stage to use a offer type draft."
+        );
       break;
     case "rejection":
       if (currentStepTitle.includes("reject")) {
@@ -53,6 +55,14 @@ export const sendLetter = async (req: Request, res: Response) => {
         return throwError(
           "Candidate is not yet rejected to use a rejection type draft."
         );
+      break;
+    default:
+      currentEvent.activities.push({
+        title: "Email Sent",
+        description: `Candidate was sent an email ${
+          draft && "using the " + draft.title + " draft"
+        }.`,
+      } as any);
       break;
   }
 
@@ -74,8 +84,35 @@ export const sendLetter = async (req: Request, res: Response) => {
 };
 
 export const getAllLetters = async (req: Request, res: Response) => {
-  const letters = await Letter.find().populate("candidate draft");
-  successResponse({ res, data: letters });
+  const { search } = req.query;
+
+  const query: any = {};
+
+  if (search) {
+    query.$or = [
+      { "candidate.name": { $regex: search, $options: "i" } },
+      { "candidate.email": { $regex: search, $options: "i" } },
+      { "draft.title": { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const letters = await Letter.find()
+    .populate("candidate draft")
+    .sort({ createdAt: -1 });
+
+  const filteredLetters = search
+    ? letters.filter((letter) =>
+        [
+          letter.candidate.name,
+          letter.candidate.email,
+          letter.draft.title,
+        ].some((field) =>
+          field?.toLowerCase().includes((search as string).toLowerCase())
+        )
+      )
+    : letters;
+
+  successResponse({ res, data: filteredLetters });
 };
 
 export const getLetterById = async (req: Request, res: Response) => {

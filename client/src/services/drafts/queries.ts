@@ -2,10 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllDrafts, getAllDraftVariables, getDraftById } from ".";
 import { draftKeys, draftVariableKeys } from "./keys";
 
-export const useGetAllDrafts = () => {
+export const useGetAllDrafts = (params?: Record<string, string>) => {
+  const searchParams = new URLSearchParams(params || {});
+
   return useQuery({
-    queryFn: getAllDrafts,
-    queryKey: draftKeys.all(),
+    queryFn: () => getAllDrafts(searchParams),
+    queryKey: draftKeys.all(searchParams),
   });
 };
 

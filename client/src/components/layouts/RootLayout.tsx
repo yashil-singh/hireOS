@@ -4,9 +4,10 @@ import Sidebar from "../shared/Sidebar";
 import { ScrollRestoration } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/slices/store";
+import ToTopButton from "../shared/ToTopButton";
 
 const RootLayout = () => {
-  const user = useSelector((state: RootState) => state.session.user);
+  const { user } = useSelector((state: RootState) => state.session);
 
   return !user ? (
     <Navigate to="/login" />
@@ -23,6 +24,8 @@ const RootLayout = () => {
           <Outlet />
         </main>
       </section>
+
+      <ToTopButton />
     </div>
   );
 };

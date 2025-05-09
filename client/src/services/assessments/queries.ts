@@ -6,9 +6,11 @@ import {
 } from ".";
 import { assessmentKeys } from "./keys";
 
-export const useGetAllAssessments = () => {
+export const useGetAllAssessments = (params?: Record<string, string>) => {
+  const searchParams = new URLSearchParams(params || {});
+
   return useQuery({
-    queryFn: getAllAssessments,
+    queryFn: () => getAllAssessments(searchParams),
     queryKey: assessmentKeys.all(),
   });
 };

@@ -9,8 +9,10 @@ import { MultiEventResponse, SingleEventResponse } from "./types";
 
 const BASE = "/calendar";
 
-export const getAllCalendarEvents = async (): Promise<MultiEventResponse> => {
-  const response = await GET(`${BASE}/events`);
+export const getAllCalendarEvents = async (
+  params?: URLSearchParams,
+): Promise<MultiEventResponse> => {
+  const response = await GET(`${BASE}/events`, params);
   return response;
 };
 

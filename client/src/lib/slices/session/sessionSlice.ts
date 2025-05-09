@@ -4,6 +4,7 @@ import { SessionState, User } from "./types";
 const initialState: SessionState = {
   user: null,
   loading: true,
+  isAuthenticated: false,
 };
 
 const sessionSlice = createSlice({
@@ -13,10 +14,12 @@ const sessionSlice = createSlice({
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       state.loading = false;
+      state.isAuthenticated = true;
     },
     clearUser: (state) => {
       state.user = null;
       state.loading = false;
+      state.isAuthenticated = false;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;

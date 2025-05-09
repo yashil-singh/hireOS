@@ -7,10 +7,12 @@ import {
 } from ".";
 import { candidateKeys } from "./keys";
 
-export const useGetAllCandidates = () => {
+export const useGetAllCandidates = (params?: Record<string, string>) => {
+  const searchParams = new URLSearchParams(params || {});
+
   return useQuery({
-    queryFn: getAllCandidates,
-    queryKey: candidateKeys.all(),
+    queryFn: () => getAllCandidates(searchParams),
+    queryKey: candidateKeys.all(searchParams),
   });
 };
 

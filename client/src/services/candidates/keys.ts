@@ -1,5 +1,8 @@
 export const candidateKeys = {
-  all: () => ["candidates"],
+  all: (params: URLSearchParams = new URLSearchParams()) => [
+    "candidates",
+    params.toString(),
+  ],
   detail: (id: string) => ["candidates", id],
   eligible: () => ["candidates", "eligible"],
   eligibleWithStatus: (status?: string) => ["candidates", "eligible", status],

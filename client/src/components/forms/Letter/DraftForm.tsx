@@ -69,7 +69,9 @@ const DraftForm = ({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>
+                Title<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter draft title" {...field} />
               </FormControl>
@@ -84,7 +86,9 @@ const DraftForm = ({
           name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Type</FormLabel>
+              <FormLabel>
+                Type<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Select
                   value={field.value}
@@ -119,7 +123,9 @@ const DraftForm = ({
           name="content"
           render={({ field, fieldState }) => (
             <FormItem>
-              <FormLabel>Content</FormLabel>
+              <FormLabel>
+                Content<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <RichTextEditor
                   isError={!!fieldState.error}

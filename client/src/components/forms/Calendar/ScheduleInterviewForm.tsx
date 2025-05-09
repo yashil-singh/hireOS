@@ -102,7 +102,9 @@ const ScheduleInterviewForm = ({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>
+                Title<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter interview title" {...field} />
               </FormControl>
@@ -117,12 +119,15 @@ const ScheduleInterviewForm = ({
           name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date</FormLabel>
+              <FormLabel>
+                Date<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <DatePicker
                   date={field.value}
                   setDate={field.onChange}
                   error={!!form.formState.errors.date}
+                  minDate={new Date()}
                 />
               </FormControl>
               <span>
@@ -138,7 +143,9 @@ const ScheduleInterviewForm = ({
             name="startTime"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Start Time</FormLabel>
+                <FormLabel>
+                  Start Time<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <TimePicker
                     time={field.value}
@@ -157,7 +164,9 @@ const ScheduleInterviewForm = ({
             name="endTime"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>End Time</FormLabel>
+                <FormLabel>
+                  End Time<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <TimePicker
                     time={field.value}
@@ -178,7 +187,9 @@ const ScheduleInterviewForm = ({
           name="candidate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Candidate</FormLabel>
+              <FormLabel>
+                Candidate<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Combobox
                   placeholder="Select Candidate"
@@ -200,7 +211,9 @@ const ScheduleInterviewForm = ({
           name="interviewers"
           render={({ field }) => (
             <FormItem className="md:col-span-2">
-              <FormLabel>Interviewers</FormLabel>
+              <FormLabel>
+                Interviewers<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <MultiSelect
                   options={getInterviewerOptions()}

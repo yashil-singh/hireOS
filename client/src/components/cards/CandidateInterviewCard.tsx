@@ -5,14 +5,23 @@ import { format } from "date-fns";
 import { Bell, Calendar, Check, Clock, Info, Loader2, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Link } from "react-router-dom";
-import { useSendInterviewReminder } from "@/services/calendar/mutations";
+import {
+  useMarkInterviewAsCompleted,
+  useSendInterviewReminder,
+} from "@/services/calendar/mutations";
 
 type CandidateInterviewCardProps = {
   event: CalendarEvent;
 };
 
 const CandidateInterviewCard = ({ event }: CandidateInterviewCardProps) => {
-  const { mutateAsync, isPending } = useSendInterviewReminder();
+  // Mutations
+  const { mutateAsync: sendInterviewReminder, isPending: isSendingReminder } =
+    useSendInterviewReminder();
+  const {
+    mutateAsync: markInterviewAsCompleted,
+    isPending: isMarkingCompleted,
+  } = useMarkInterviewAsCompleted();
 
   const { _id, title, status, end, event: parentEvent } = event;
 
@@ -55,27 +64,45 @@ const CandidateInterviewCard = ({ event }: CandidateInterviewCardProps) => {
       </p>
 
       <div className="mt-4 flex flex-col items-center justify-end gap-2 md:flex-row">
-        {!isCancelled && (
-          <Button
-            variant="outline"
-            className="w-full md:max-w-[150px]"
-            disabled={isPassed || hasConcluded || isPending || isCancelled}
-            onClick={() => mutateAsync(event._id)}
-          >
-            {isPending ? (
-              <>
-                <Loader2 className="animate-spin" /> Sending
-              </>
-            ) : (
-              <>
-                <Bell /> Send Reminder
-              </>
-            )}
-          </Button>
-        )}
+        {!hasConcluded &&
+          (isPassed ? (
+            <Button
+              variant="outline"
+              className="w-full md:w-fit"
+              disabled={hasConcluded || isMarkingCompleted}
+              onClick={() => markInterviewAsCompleted(event._id)}
+            >
+              {isMarkingCompleted ? (
+                <>
+                  <Loader2 className="animate-spin" /> Marking as Completed
+                </>
+              ) : (
+                <>
+                  <Check /> Mark as Completed
+                </>
+              )}
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              className="w-full md:max-w-[150px]"
+              disabled={hasConcluded || isSendingReminder}
+              onClick={() => sendInterviewReminder(event._id)}
+            >
+              {isSendingReminder ? (
+                <>
+                  <Loader2 className="animate-spin" /> Sending
+                </>
+              ) : (
+                <>
+                  <Bell /> Send Reminder
+                </>
+              )}
+            </Button>
+          ))}
 
         <Button className="w-full md:w-fit" asChild>
-          <Link to={`/calendar/event/${_id}`}>
+          <Link to={`/interviews/${_id}`}>
             <Info /> Details
           </Link>
         </Button>

@@ -38,7 +38,7 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
   );
   const dispatch = useDispatch();
 
-  const [searchQuery, setSearchQuery] = useState("tes");
+  const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery] = useDebounce(searchQuery, 500);
 
   // Queries
@@ -137,7 +137,7 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
 
               {searchHistory.length > 0 ? (
                 searchHistory.map((candidate) => (
-                  <button
+                  <div
                     key={candidate._id}
                     className="hover:bg-accent flex w-full items-center justify-between gap-4 rounded-xl border p-4 transition-colors"
                     onClick={() => {
@@ -178,7 +178,7 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
                     >
                       <X />
                     </Button>
-                  </button>
+                  </div>
                 ))
               ) : (
                 <p className="text-muted-foreground text-center text-sm">

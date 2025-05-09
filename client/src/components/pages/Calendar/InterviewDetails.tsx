@@ -1,17 +1,16 @@
 import AccountAvatar from "@/components/shared/AccountAvatar";
 import BackButton from "@/components/shared/BackButton";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_DATE_FORMAT } from "@/lib/constants";
+import { DEFAULT_DATE_FORMAT, interviewStatusColor } from "@/lib/constants";
 import { format } from "date-fns";
 import {
   Bell,
   Briefcase,
   Calendar,
   Check,
-  CircleCheck,
   Clock,
   EllipsisVertical,
-  Eye,
+  Info,
   Loader2,
   Mail,
   Phone,
@@ -34,7 +33,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import EventDetailsSkeleton from "@/components/skeletons/EventDetailsSkeleton";
 import NotFound from "../NotFound";
 import { useGetCalendarEventById } from "@/services/calendar/queries";
 import { toast } from "sonner";
@@ -52,8 +50,11 @@ import {
   useRescheduleInterview,
   useSendInterviewReminder,
 } from "@/services/calendar/mutations";
+import InterviewDetailsSkeleton from "@/components/skeletons/InterviewDetailsSkeleton";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
-const EventDetails = () => {
+const InterviewDetails = () => {
   const { id } = useParams();
 
   const { data, isLoading, error } = useGetCalendarEventById(id!);
@@ -74,7 +75,7 @@ const EventDetails = () => {
 
   // Mutations
   const rescheduleMutation = useRescheduleInterview();
-  const completeMutation = useMarkInterviewAsCompleted(id!);
+  const completeMutation = useMarkInterviewAsCompleted();
   const { mutateAsync: sendReminderMutate, isPending: isSendingReminder } =
     useSendInterviewReminder();
 
@@ -114,7 +115,7 @@ const EventDetails = () => {
 
   const onComplete = async () => {
     setIsCompleting(true);
-    await completeMutation.mutateAsync();
+    await completeMutation.mutateAsync(id!);
     setIsCompleting(false);
   };
 
@@ -140,15 +141,18 @@ const EventDetails = () => {
     }
   }, [data]);
 
-  if (isLoading) return <EventDetailsSkeleton />;
+  if (isLoading) return <InterviewDetailsSkeleton />;
 
-  if (!data || error) return <NotFound label="event" />;
+  if (!data || error)
+    return <NotFound label="Failed to load interview details." />;
 
   const { _id, title, candidate, start, end, interviewers, status, event } =
     data.data;
 
   const today = new Date();
   const isPassed = new Date(end) < today;
+
+  const hasConcluded = status === "cancelled" || status === "completed";
   const isCancelled = event.status === "cancelled";
 
   return (
@@ -161,22 +165,23 @@ const EventDetails = () => {
             <h1 className="page-heading">{title}</h1>
             {!isCancelled ? (
               <>
-                {!isPassed && status !== "cancelled" && (
-                  <p className="flex items-center gap-1 text-sm text-amber-500">
+                {!hasConcluded && (
+                  <Badge className={cn(interviewStatusColor.scheduled)}>
                     <Clock className="size-4" /> Pending
-                  </p>
+                  </Badge>
                 )}
 
-                {isPassed && status === "completed" && (
-                  <p className="flex items-center gap-1 text-sm text-green-500">
-                    <CircleCheck className="size-4" /> Completed
-                  </p>
+                {status === "completed" && (
+                  <Badge className={cn(interviewStatusColor.completed)}>
+                    <Check />
+                    Competed
+                  </Badge>
                 )}
 
                 {status === "cancelled" && (
-                  <p className="text-destructive flex items-center gap-1 text-sm">
+                  <Badge className={cn(interviewStatusColor.cancelled)}>
                     <X className="size-4" /> Cancelled
-                  </p>
+                  </Badge>
                 )}
               </>
             ) : (
@@ -242,50 +247,42 @@ const EventDetails = () => {
         </DropdownMenu>
       </div>
 
-      <div className="flex flex-col items-center gap-2 md:flex-row">
-        {isPassed && (
-          <Button
-            className="w-full md:max-w-[170px]"
-            disabled={
-              status === "completed" || status === "cancelled" || !isPassed
-            }
-            onClick={onComplete}
-          >
-            {status === "completed" ? (
-              <>
-                <Check /> Completed
-              </>
-            ) : isCompleting ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <>
-                <Check /> Mark as completed
-              </>
-            )}
-          </Button>
-        )}
-
-        <DynamicDialog
-          open={isRescheduling}
-          onOpenChange={onOpenChange}
-          trigger={
+      {!hasConcluded && (
+        <div className="flex flex-col items-center gap-2 md:flex-row">
+          {isPassed && (
             <Button
-              variant="outline"
-              className="w-full md:max-w-[125px]"
-              disabled={status === "completed" || status === "cancelled"}
+              className="w-full md:max-w-[170px]"
+              disabled={hasConcluded || !isPassed}
+              onClick={onComplete}
             >
-              <RotateCcw /> Reschedule
+              {isCompleting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <>
+                  <Check /> Mark as completed
+                </>
+              )}
             </Button>
-          }
-          title="Re-Schedule Interview"
-          description="Update the date and time of an existing interview, ensuring that the new schedule does not conflict with the candidate’s or interviewers’ availability."
-        >
-          <RescheduleInterviewForm form={form} onSubmit={onReschedule} />
-        </DynamicDialog>
-      </div>
+          )}
 
-      <h2 className="mt-4 text-lg font-semibold">Interviewee Details</h2>
-      <div className="bg-card mt-2 flex flex-col items-center gap-4 rounded-xl border p-6 md:flex-row md:gap-8">
+          <DynamicDialog
+            open={isRescheduling}
+            onOpenChange={onOpenChange}
+            trigger={
+              <Button variant="outline" className="w-full md:max-w-[125px]">
+                <RotateCcw /> Reschedule
+              </Button>
+            }
+            title="Re-Schedule Interview"
+            description="Update the date and time of an existing interview, ensuring that the new schedule does not conflict with the candidate’s or interviewers’ availability."
+          >
+            <RescheduleInterviewForm form={form} onSubmit={onReschedule} />
+          </DynamicDialog>
+        </div>
+      )}
+
+      <h2 className="mt-4 text-lg font-semibold">Interviewee</h2>
+      <div className="bg-card mt-2 flex flex-col items-center gap-4 rounded-xl border p-6 md:w-fit md:flex-row md:gap-8">
         <AccountAvatar
           avatarUrl={candidate.avatarUrl ?? ""}
           className="size-32"
@@ -308,7 +305,7 @@ const EventDetails = () => {
 
           <Button className="w-full md:w-fit" variant="ghost" asChild>
             <Link to={`/candidates/${candidate._id}`}>
-              <Eye /> View Details
+              <Info /> Details
             </Link>
           </Button>
         </div>
@@ -373,4 +370,4 @@ const EventDetails = () => {
   );
 };
 
-export default EventDetails;
+export default InterviewDetails;

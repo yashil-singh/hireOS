@@ -8,10 +8,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { candidateSchema } from "@/lib/schemas/candidateSchemas";
 import { cn } from "@/lib/utils";
 import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 import ExperienceForm from "./ExperienceForm";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,10 +22,11 @@ import {
 import { CandidateLevels, Technologies } from "@/lib/constants";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Loader2 } from "lucide-react";
+import { CandidateFormValues } from "@/services/candidates/type";
 
 type CandidateFormProps = {
-  form: UseFormReturn<z.infer<typeof candidateSchema>>;
-  onSubmit: (data: z.infer<typeof candidateSchema>) => void;
+  form: UseFormReturn<CandidateFormValues>;
+  onSubmit: (data: CandidateFormValues) => void;
   className?: string;
 };
 
@@ -48,7 +47,9 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Candidate's Name</FormLabel>
+                <FormLabel>
+                  Candidate's Name<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter candidate name" {...field} />
                 </FormControl>
@@ -63,7 +64,9 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Candidate's Email</FormLabel>
+                <FormLabel>
+                  Candidate's Email<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter candidate email" {...field} />
                 </FormControl>
@@ -78,11 +81,13 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Candidate's Phone Number</FormLabel>
+                <FormLabel>
+                  Candidate's Phone Number
+                  <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Enter candidate phone number"
-                    type="number"
                     className="hide-num-input"
                     {...field}
                   />
@@ -98,7 +103,10 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="reference"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Candidate's Reference</FormLabel>
+                <FormLabel>
+                  Candidate's Reference
+                  <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter reference email" {...field} />
                 </FormControl>
@@ -121,7 +129,9 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="resumeFile"
             render={({ field }) => (
               <FormItem className="lg:col-span-2 xl:col-span-3">
-                <FormLabel>Resume</FormLabel>
+                <FormLabel>
+                  Resume<span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     accept=".pdf,.doc,.docx"
@@ -147,7 +157,10 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="technology"
             render={({ field }) => (
               <FormItem className="md:col-span-2">
-                <FormLabel>Candidate's Preferred Technologies</FormLabel>
+                <FormLabel>
+                  Candidate's Preferred Technologies
+                  <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <MultiSelect
                     className="h-12"
@@ -172,7 +185,10 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="level"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Candidate's Position</FormLabel>
+                <FormLabel>
+                  Candidate's Position
+                  <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Select
                     onValueChange={field.onChange}
@@ -207,7 +223,10 @@ const CandidateForm = ({ form, onSubmit, className }: CandidateFormProps) => {
             name="salaryExpectation"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Candidate's Salary Expectation</FormLabel>
+                <FormLabel>
+                  Candidate's Salary Expectation
+                  <span className="text-destructive">*</span>
+                </FormLabel>
                 <FormControl>
                   <Input
                     placeholder="Enter candidate's salaray expectation"

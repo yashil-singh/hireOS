@@ -57,27 +57,12 @@ const validateParticipants = async (
   if (candidatePendingInterviews)
     return throwError("Candidate has a pending interview.");
 
-  const candidateConflict = await Interview.findOne({
-    candidate: candidateId,
-    start: { $lt: end },
-    end: { $gt: start },
-  });
-
-  if (candidateConflict) {
-    const timeRange = `${format(candidateConflict.start, "hh:mm a")} - ${format(
-      candidateConflict.end,
-      "hh:mm a"
-    )}`;
-    return throwError(
-      `Candidate is already scheduled for another interview during this time: ${timeRange}.`,
-      409
-    );
-  }
-
   const interviewerConflicts = await Interview.find({
     interviewers: { $in: interviewers },
     start: { $lt: end },
     end: { $gt: start },
+    candidate: { $ne: candidateId },
+    status: { $nin: ["completed", "cancelled"] },
   }).populate("interviewers");
 
   if (interviewerConflicts.length > 0) {

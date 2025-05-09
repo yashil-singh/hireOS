@@ -6,10 +6,12 @@ import {
 } from ".";
 import { calendarKeys } from "./keys";
 
-export const useGetAllCalenderEvents = () => {
+export const useGetAllCalenderEvents = (params?: Record<string, string>) => {
+  const queryParams = new URLSearchParams(params);
+
   return useQuery({
-    queryFn: getAllCalendarEvents,
-    queryKey: calendarKeys.all(),
+    queryFn: () => getAllCalendarEvents(queryParams),
+    queryKey: calendarKeys.all(queryParams.toString()),
   });
 };
 

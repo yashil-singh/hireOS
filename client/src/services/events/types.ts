@@ -1,4 +1,4 @@
-import { Event } from "@/lib/types";
+import { Event } from "../calendar/types";
 
 export type GetEventsByCandidateIdResponse = {
   message: string;

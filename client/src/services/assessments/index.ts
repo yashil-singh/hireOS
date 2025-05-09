@@ -1,3 +1,4 @@
+import { URLSearchParams } from "url";
 import { GET, POST } from "../api";
 import {
   AssessmentFormValues,
@@ -9,8 +10,10 @@ import {
 
 const BASE = "/assessments";
 
-export const getAllAssessments = async (): Promise<MultiAssessmentResponse> => {
-  const response = await GET(`${BASE}`);
+export const getAllAssessments = async (
+  params: URLSearchParams,
+): Promise<MultiAssessmentResponse> => {
+  const response = await GET(BASE, params);
   return response;
 };
 

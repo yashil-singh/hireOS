@@ -152,27 +152,50 @@ export const getApplicationCounts = async () => {
 };
 
 const getAverageStageDuration = async () => {
-  const events = await Event.find().populate("step");
+  const events = await Event.find().populate("step candidate");
+
+  // Group events by candidate
+  const eventsByCandidate: Record<string, typeof events> = {};
+
+  for (const event of events) {
+    const candidateId = event.candidate._id.toString();
+
+    if (!eventsByCandidate[candidateId]) {
+      eventsByCandidate[candidateId] = [];
+    }
+
+    eventsByCandidate[candidateId].push(event);
+  }
 
   const stepDurations: Record<
     string,
     { totalDuration: number; count: number }
   > = {};
 
-  for (const event of events) {
-    if (!event.step) continue;
+  for (const candidateId in eventsByCandidate) {
+    const candidateEvents = eventsByCandidate[candidateId].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
 
-    const stepName = event.step.title;
-    const start = new Date(event.createdAt).getTime();
-    const end = new Date(event.updatedAt).getTime();
-    const durationInDays = (end - start) / (1000 * 60 * 60 * 24);
+    for (let i = 0; i < candidateEvents.length - 1; i++) {
+      const currentEvent = candidateEvents[i];
+      const nextEvent = candidateEvents[i + 1];
 
-    if (!stepDurations[stepName]) {
-      stepDurations[stepName] = { totalDuration: 0, count: 0 };
+      if (!currentEvent.step) continue;
+
+      const stepName = currentEvent.step.title;
+      const start = new Date(currentEvent.createdAt).getTime();
+      const end = new Date(nextEvent.createdAt).getTime();
+      const durationInDays = (end - start) / (1000 * 60 * 60 * 24);
+
+      if (!stepDurations[stepName]) {
+        stepDurations[stepName] = { totalDuration: 0, count: 0 };
+      }
+
+      stepDurations[stepName].totalDuration += durationInDays;
+      stepDurations[stepName].count += 1;
     }
-
-    stepDurations[stepName].totalDuration += durationInDays;
-    stepDurations[stepName].count += 1;
   }
 
   const averageDurations: Record<string, number> = {};

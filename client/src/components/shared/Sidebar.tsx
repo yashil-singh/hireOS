@@ -16,8 +16,8 @@ const Sidebar = () => {
   return (
     <aside
       className={cn(
-        "no-scrollbar sticky top-0 left-0 hidden h-screen flex-col justify-between overflow-y-auto border-r transition-all lg:flex",
-        isCollapsed ? "w-20" : "w-96",
+        "no-scrollbar bg-background sticky top-0 left-0 z-20 hidden h-screen flex-col justify-between overflow-y-auto border-r transition-all lg:flex",
+        isCollapsed ? "w-20" : "w-96 min-w-[250px]",
       )}
     >
       <section>

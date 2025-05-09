@@ -36,3 +36,11 @@ export function replaceVariable(
   const pattern = new RegExp(`{{\\s*${variable}\\s*}}`, "g");
   return template.replace(pattern, value);
 }
+
+export function normalizeCandidateStatus(status: string) {
+  const normalizedStatus = status.includes("interview")
+    ? "interview"
+    : status.replace("-", "");
+
+  return normalizedStatus;
+}

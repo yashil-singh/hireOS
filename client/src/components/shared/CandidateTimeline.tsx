@@ -1,9 +1,10 @@
-import { Event } from "@/lib/types";
 import { Badge } from "../ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, normalizeCandidateStatus } from "@/lib/utils";
 import { Crown, Flag, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/slices/store";
+import { candidateStatusColors } from "@/lib/constants";
+import { Event } from "@/services/calendar/types";
 
 const CandidateTimeline = ({ events }: { events: Event[] }) => {
   const steps = useSelector((state: RootState) => state.hiringProcess.steps);
@@ -50,49 +51,59 @@ const CandidateTimeline = ({ events }: { events: Event[] }) => {
         <p className="mt-2 text-sm font-semibold">Start</p>
       </div>
 
-      {buildTimeline().map((step, index) => (
-        <div
-          key={step.label + index}
-          className="z-0 flex flex-col items-center"
-        >
-          <Badge
-            variant={
-              step.status === "completed"
-                ? "default"
-                : step.status === "rejected"
-                  ? "destructive"
-                  : "secondary"
-            }
-            className={cn(
-              step.status !== "completed" &&
-                step.status !== "rejected" &&
-                "bg-muted text-muted-foreground",
-            )}
+      {buildTimeline().map((step, index) => {
+        const normalizedStatus = normalizeCandidateStatus(step.label);
+
+        const statusClass =
+          candidateStatusColors[
+            normalizedStatus as keyof typeof candidateStatusColors
+          ];
+        return (
+          <div
+            key={step.label + index}
+            className="z-0 flex flex-col items-center backdrop-blur-lg"
           >
-            {step.status === "rejected" ? (
-              <X className="size-4!" />
-            ) : (
-              `Step ${index + 1}`
-            )}
-          </Badge>
-          <p
-            className={cn(
-              "mt-2 text-sm font-semibold capitalize",
-              step.status === "rejected" && "text-red-500",
-              step.status !== "completed" &&
-                step.status !== "rejected" &&
-                "opacity-50",
-            )}
-          >
-            {step.label}
-          </p>
-        </div>
-      ))}
+            <Badge
+              variant={
+                step.status === "completed"
+                  ? "default"
+                  : step.status === "rejected"
+                    ? "destructive"
+                    : "secondary"
+              }
+              className={cn(
+                step.status !== "completed" &&
+                  step.status !== "rejected" &&
+                  "bg-muted! text-muted-foreground! border-transparent!",
+                statusClass,
+              )}
+            >
+              {step.status === "rejected" ? (
+                <X className="size-4!" />
+              ) : (
+                `Step ${index + 1}`
+              )}
+            </Badge>
+
+            <p
+              className={cn(
+                "mt-2 text-sm font-semibold capitalize",
+                step.status === "rejected" && "text-red-500",
+                step.status !== "completed" &&
+                  step.status !== "rejected" &&
+                  "opacity-50",
+              )}
+            >
+              {step.label}
+            </p>
+          </div>
+        );
+      })}
 
       {!isRejected && (
         <div
           className={cn(
-            "text-muted-foreground flex flex-col items-center gap-1 text-sm font-bold",
+            "text-muted-foreground flex flex-col items-center gap-1 text-sm font-bold backdrop-blur-lg",
             isHired && "text-foreground",
           )}
         >

@@ -40,7 +40,9 @@ const InterviewerForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Interviewers's Name</FormLabel>
+              <FormLabel>
+                Interviewers's Name<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter interviewers name" {...field} />
               </FormControl>
@@ -55,7 +57,9 @@ const InterviewerForm = ({
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Interviewers's Email</FormLabel>
+              <FormLabel>
+                Interviewers's Email<span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input placeholder="Enter interviewers email" {...field} />
               </FormControl>
@@ -70,7 +74,10 @@ const InterviewerForm = ({
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Interviewers's Phone Number</FormLabel>
+              <FormLabel>
+                Interviewers's Phone Number
+                <span className="text-destructive">*</span>
+              </FormLabel>
               <FormControl>
                 <Input
                   placeholder="Enter interviewers phone number"

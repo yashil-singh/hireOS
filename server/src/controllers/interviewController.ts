@@ -9,10 +9,26 @@ import Candidate from "@/models/Candidate";
 import { DEFAULT_TIME_FORMAT } from "@/lib/constants";
 
 export const getAllInterviews = async (req: Request, res: Response) => {
-  const interviews = await Interview.find()
+  const { search } = req.query;
+  const query: any = {};
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { "candidate.name": { $regex: search, $options: "i" } },
+    ];
+  }
+
+  const interviews = await Interview.find(query)
     .populate("interviewers")
     .populate("candidate")
-    .populate("event");
+    .populate("event")
+    .populate({
+      path: "event",
+      populate: {
+        path: "step",
+      },
+    })
+    .sort({ start: -1 });
   successResponse({ res, data: interviews });
 };
 
@@ -281,7 +297,7 @@ export const markInterviewAsCompleted = async (req: Request, res: Response) => {
   const { id } = req.params;
   if (!isObjectId(id)) return throwError("Interview ID is required.");
 
-  const interview = await Interview.findById(id);
+  const interview = await Interview.findById(id).populate("candidate");
   if (!interview) return throwError("Interview not found.", 404);
 
   if (interview.status === "completed")
@@ -289,16 +305,19 @@ export const markInterviewAsCompleted = async (req: Request, res: Response) => {
   if (interview.status === "cancelled")
     return throwError("Interview is cancelled.");
 
+  if (new Date(interview.end) > new Date())
+    return throwError(
+      "Cannot mark interview as completed before the scheduled time."
+    );
+
   interview.status = "completed";
 
   const updatedInterview = await interview.save();
 
   const event = await Event.findById(updatedInterview.event);
-
   if (!event) return throwError("Event not found", 404);
 
   const step = await HiringProcess.findById(event.step);
-
   if (!step) return throwError("Step not found", 404);
 
   await Event.findByIdAndUpdate(updatedInterview.event, {
@@ -311,5 +330,9 @@ export const markInterviewAsCompleted = async (req: Request, res: Response) => {
     },
   });
 
-  successResponse({ res, message: "Interview marked as completed." });
+  successResponse({
+    res,
+    message: "Interview marked as completed.",
+    data: updatedInterview,
+  });
 };

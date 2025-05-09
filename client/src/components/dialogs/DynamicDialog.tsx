@@ -67,11 +67,10 @@ const DynamicDialog = ({
 
         container.addEventListener("scroll", handleScroll);
 
-        // Cleanup
         return () => {
           container.removeEventListener("scroll", handleScroll);
         };
-      }, 100); // Delay slightly to let DialogContent mount
+      }, 100);
     }
 
     return () => {
@@ -83,20 +82,20 @@ const DynamicDialog = ({
     <Drawer open={open} onOpenChange={onOpenChange} autoFocus={open}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
 
-      <DrawerContent>
+      <DrawerContent className="max-h-[90vh]">
+        <DrawerHeader className={cn("pb-0", !showHeader && "sr-only")}>
+          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription className={cn(!showDescription && "sr-only")}>
+            {description}
+          </DrawerDescription>
+        </DrawerHeader>
         <div
           ref={scrollRef}
           className={cn(
-            "no-scrollbar mt-4 w-full space-y-4 overflow-y-auto p-4",
+            "no-scrollbar mt-4 h-full w-full space-y-4 overflow-y-auto p-4 pt-0",
             className,
           )}
         >
-          <DrawerHeader className={cn("p-0", !showHeader && "sr-only")}>
-            <DrawerTitle>{title}</DrawerTitle>
-            <DrawerDescription className={cn(!showDescription && "sr-only")}>
-              {description}
-            </DrawerDescription>
-          </DrawerHeader>
           {children}
 
           {showScrollTopButton && showScrollTop && (
@@ -124,17 +123,17 @@ const DynamicDialog = ({
       <DialogContent
         className={cn("w-full max-w-[600px]! px-0 py-0", className)}
       >
+        <DialogHeader className="p-4 pb-0">
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription className={cn(!showDescription && "sr-only")}>
+            {description}
+          </DialogDescription>
+        </DialogHeader>
+
         <div
           ref={scrollRef}
-          className="no-scrollbar max-h-[90vh] w-full space-y-4 overflow-y-auto p-4"
+          className="no-scrollbar max-h-[80vh] w-full space-y-4 overflow-y-auto p-4 pt-0"
         >
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription className={cn(!showDescription && "sr-only")}>
-              {description}
-            </DialogDescription>
-          </DialogHeader>
-
           {children}
 
           {showScrollTopButton && showScrollTop && (
