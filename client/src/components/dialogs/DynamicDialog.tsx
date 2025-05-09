@@ -83,8 +83,10 @@ const DynamicDialog = ({
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
 
       <DrawerContent className="max-h-[90vh]">
-        <DrawerHeader className={cn("pb-0", !showHeader && "sr-only")}>
-          <DrawerTitle>{title}</DrawerTitle>
+        <DrawerHeader className="pb-0">
+          <DrawerTitle className={cn(!showHeader && "sr-only")}>
+            {title}
+          </DrawerTitle>
           <DrawerDescription className={cn(!showDescription && "sr-only")}>
             {description}
           </DrawerDescription>
