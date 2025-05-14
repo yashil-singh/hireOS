@@ -1,54 +1,37 @@
-# React + TypeScript + Vite
+# HireOS - The Hiring Solution
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A streamlined and comprehensive hiring platform built for HR and senior team members to manage the entire recruitment lifecycle. This application simplifies CV collection, candidate tracking, evaluations, interviews, and offer management in one centralized dashboard.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+1. 📝 CV Collection & Tagging
 
-## Expanding the ESLint configuration
+- Upload and store candidate CVs
+- Tag and filter CVs by skills, experience, and other metadata
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+2. 📊 Candidate Tracking
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- Monitor each candidate's status (e.g., Applied, Shortlisted, Interviewed, Offered)
+- Visual timeline of candidate journey through the hiring pipeline
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. 📅 Interview Scheduling
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- Schedule interviews and send reminders
+- Track interview outcomes and attendance
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+4. ✅ Assessment & Evaluation
+
+- Upload assessments for candidates
+- Evaluators can review and submit feedback
+
+5. 📄 Letter/Offer Management
+
+- Generate offer letters dynamically
+- Create and use letter drafts.
+
+## 🧱 Tech Stack
+
+- Frontend: React, TypeScript, Vite, Tailwind CSS, ShadCN UI
+- State Management & Data Fetching: Redux Toolkit, TanStack Query
+- Backend: Node.js, Express.js, TypeScript
+- Database: MongoDB
