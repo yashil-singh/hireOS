@@ -6,7 +6,6 @@ export const useGetAllHiringProcessSteps = () => {
   return useQuery({
     queryFn: getAllHiringProcessSteps,
     queryKey: hiringProcessKeys.all(),
-    retry: false,
   });
 };
 

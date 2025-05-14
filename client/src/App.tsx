@@ -8,8 +8,6 @@ import { authenticate } from "./services/auth";
 import { clearUser, setUser } from "./lib/slices/session/sessionSlice";
 import Loading from "./components/pages/Loading";
 import { useQuery } from "@tanstack/react-query";
-import { useGetAllHiringProcessSteps } from "./services/hiringProcess/queries";
-import { setHiringProcess } from "./lib/slices/hiringProcess/hiringProcessSlice";
 import { Toaster } from "./components/ui/sonner";
 
 function App() {
@@ -25,9 +23,6 @@ function App() {
     refetchOnWindowFocus: true,
   });
 
-  const { data: hiringProcessSteps, isLoading: hiringProcessStepsLoading } =
-    useGetAllHiringProcessSteps();
-
   useEffect(() => {
     if (!isFetched) return;
 
@@ -39,12 +34,6 @@ function App() {
       }
     }
   }, [data, isError, isFetched, dispatch]);
-
-  useEffect(() => {
-    if (hiringProcessSteps) {
-      dispatch(setHiringProcess(hiringProcessSteps.data));
-    }
-  }, [hiringProcessSteps, dispatch]);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -70,7 +59,7 @@ function App() {
     }
   }, [theme, dispatch]);
 
-  if (loading || hiringProcessStepsLoading) return <Loading />;
+  if (loading) return <Loading />;
 
   return (
     <>
